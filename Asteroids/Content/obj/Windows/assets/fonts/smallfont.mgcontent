@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PipelineBuildEvent xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <SourceFile>C:/Users/effen/OneDrive/Documents/Visual Studio 2015/Projects/C#/IGME 202/Projects/Asteroids/Asteroids/Content/assets/fonts/smallfont.spritefont</SourceFile>
+  <SourceTime>2017-04-03T17:25:53.0544982-04:00</SourceTime>
+  <DestFile>C:/Users/effen/OneDrive/Documents/Visual Studio 2015/Projects/C#/IGME 202/Projects/Asteroids/Asteroids/Content/bin/Windows/assets/fonts/smallfont.xnb</DestFile>
+  <DestTime>2017-04-03T17:45:10.3321819-04:00</DestTime>
+  <Importer>FontDescriptionImporter</Importer>
+  <ImporterTime>2016-03-30T02:36:08-04:00</ImporterTime>
+  <Processor>FontDescriptionProcessor</Processor>
+  <ProcessorTime>2016-03-30T02:36:08-04:00</ProcessorTime>
+  <Parameters>
+    <Key>TextureFormat</Key>
+    <Value>Compressed</Value>
+  </Parameters>
+  <Dependencies />
+  <BuildAsset />
+  <BuildOutput />
+</PipelineBuildEvent>
