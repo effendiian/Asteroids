@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <SourceFile>C:/Users/effen/OneDrive/Documents/Visual Studio 2015/Projects/C#/IGME 202/Projects/Asteroids/Asteroids/Content/assets/ui/arena/compass/compass_base.png</SourceFile>
-  <SourceTime>2017-03-12T00:38:25.9425028-05:00</SourceTime>
-  <DestFile>C:/Users/effen/OneDrive/Documents/Visual Studio 2015/Projects/C#/IGME 202/Projects/Asteroids/Asteroids/Content/bin/Windows/assets/ui/arena/compass/compass_base.xnb</DestFile>
-  <DestTime>2017-03-26T01:18:30.4690217-04:00</DestTime>
+  <SourceFile>C:/Users/effen/Documents/Github/Repos/C#/Asteroids/Asteroids/Content/assets/ui/arena/compass/compass_base.png</SourceFile>
+  <SourceTime>2017-03-12T00:38:26-05:00</SourceTime>
+  <DestFile>C:/Users/effen/Documents/Github/Repos/C#/Asteroids/Asteroids/Content/bin/Windows/assets/ui/arena/compass/compass_base.xnb</DestFile>
+  <DestTime>2017-04-06T12:52:36.3334801-04:00</DestTime>
   <Importer>TextureImporter</Importer>
   <ImporterTime>2016-03-30T02:36:08-04:00</ImporterTime>
   <Processor>TextureProcessor</Processor>

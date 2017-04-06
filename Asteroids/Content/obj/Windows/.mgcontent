@@ -4,16 +4,16 @@
   <Platform>Windows</Platform>
   <Config />
   <SourceFiles>
-    <File>C:/Users/effen/OneDrive/Documents/Visual Studio 2015/Projects/C#/IGME 202/Projects/Asteroids/Asteroids/Content/assets/asteroids/asteroid_01.png</File>
-    <File>C:/Users/effen/OneDrive/Documents/Visual Studio 2015/Projects/C#/IGME 202/Projects/Asteroids/Asteroids/Content/assets/asteroids/asteroid_02.png</File>
-    <File>C:/Users/effen/OneDrive/Documents/Visual Studio 2015/Projects/C#/IGME 202/Projects/Asteroids/Asteroids/Content/assets/asteroids/asteroid_03.png</File>
-    <File>C:/Users/effen/OneDrive/Documents/Visual Studio 2015/Projects/C#/IGME 202/Projects/Asteroids/Asteroids/Content/assets/asteroids/asteroid_04.png</File>
-    <File>C:/Users/effen/OneDrive/Documents/Visual Studio 2015/Projects/C#/IGME 202/Projects/Asteroids/Asteroids/Content/assets/player/bullet.png</File>
-    <File>C:/Users/effen/OneDrive/Documents/Visual Studio 2015/Projects/C#/IGME 202/Projects/Asteroids/Asteroids/Content/assets/player/spaceship.png</File>
-    <File>C:/Users/effen/OneDrive/Documents/Visual Studio 2015/Projects/C#/IGME 202/Projects/Asteroids/Asteroids/Content/assets/ui/arena/compass/compass_base.png</File>
-    <File>C:/Users/effen/OneDrive/Documents/Visual Studio 2015/Projects/C#/IGME 202/Projects/Asteroids/Asteroids/Content/assets/ui/arena/compass/compass_needle.png</File>
-    <File>C:/Users/effen/OneDrive/Documents/Visual Studio 2015/Projects/C#/IGME 202/Projects/Asteroids/Asteroids/Content/assets/fonts/mainfont.spritefont</File>
-    <File>C:/Users/effen/OneDrive/Documents/Visual Studio 2015/Projects/C#/IGME 202/Projects/Asteroids/Asteroids/Content/assets/ui/button_base.png</File>
-    <File>C:/Users/effen/OneDrive/Documents/Visual Studio 2015/Projects/C#/IGME 202/Projects/Asteroids/Asteroids/Content/assets/fonts/smallfont.spritefont</File>
+    <File>C:/Users/effen/Documents/Github/Repos/C#/Asteroids/Asteroids/Content/assets/asteroids/asteroid_01.png</File>
+    <File>C:/Users/effen/Documents/Github/Repos/C#/Asteroids/Asteroids/Content/assets/asteroids/asteroid_02.png</File>
+    <File>C:/Users/effen/Documents/Github/Repos/C#/Asteroids/Asteroids/Content/assets/asteroids/asteroid_03.png</File>
+    <File>C:/Users/effen/Documents/Github/Repos/C#/Asteroids/Asteroids/Content/assets/asteroids/asteroid_04.png</File>
+    <File>C:/Users/effen/Documents/Github/Repos/C#/Asteroids/Asteroids/Content/assets/player/bullet.png</File>
+    <File>C:/Users/effen/Documents/Github/Repos/C#/Asteroids/Asteroids/Content/assets/player/spaceship.png</File>
+    <File>C:/Users/effen/Documents/Github/Repos/C#/Asteroids/Asteroids/Content/assets/ui/arena/compass/compass_base.png</File>
+    <File>C:/Users/effen/Documents/Github/Repos/C#/Asteroids/Asteroids/Content/assets/ui/arena/compass/compass_needle.png</File>
+    <File>C:/Users/effen/Documents/Github/Repos/C#/Asteroids/Asteroids/Content/assets/fonts/mainfont.spritefont</File>
+    <File>C:/Users/effen/Documents/Github/Repos/C#/Asteroids/Asteroids/Content/assets/ui/button_base.png</File>
+    <File>C:/Users/effen/Documents/Github/Repos/C#/Asteroids/Asteroids/Content/assets/fonts/smallfont.spritefont</File>
   </SourceFiles>
 </SourceFileCollection>

@@ -38,3 +38,4 @@ F:\RIT\Interactive Media Development\C#\Asteroids (Version 2)\Asteroids\obj\x86\
 F:\RIT\Interactive Media Development\C#\Asteroids (Version 2)\Asteroids\obj\x86\Debug\Asteroids.pdb
 C:\Users\effen\Documents\Github\Repos\C#\Asteroids\Asteroids\obj\x86\Debug\Asteroids.exe
 C:\Users\effen\Documents\Github\Repos\C#\Asteroids\Asteroids\obj\x86\Debug\Asteroids.pdb
+C:\Users\effen\Documents\Github\Repos\C#\Asteroids\Asteroids\obj\x86\Debug\Asteroids.csprojResolveAssemblyReference.cache
