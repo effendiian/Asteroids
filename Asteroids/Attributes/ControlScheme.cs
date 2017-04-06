@@ -6,17 +6,11 @@
 #region Using statements.
 
 // System using statements. 
-using System;
 using System.Collections.Generic; // For List.
 using System.Linq; // For List.
-using System.Text;
-using System.Threading.Tasks;
 
 // MonoGame/XNA using statements.
 using Microsoft.Xna.Framework.Input; // For dealing with the Keys enum.
-
-// Asteroids project using statements.
-// using Asteroids.Attributes;
 
 #endregion
 

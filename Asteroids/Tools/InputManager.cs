@@ -1,23 +1,22 @@
 ﻿/// InputManager.cs - Version 1
 /// Author: Ian Effendi
 /// Date: 3.26.2017
-/// Last Updated: 4.4.2017
+/// Last Updated: 4.6.2017
 /// File Description: Contains reference to the class.
 
+#region Using statements.
+
+// Import the system packages.
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 // Import the Monogame packages.
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
-// Import the attributes.
-using Asteroids.Attributes;
+#endregion
 
- 
 namespace Asteroids.Tools
 {
 
