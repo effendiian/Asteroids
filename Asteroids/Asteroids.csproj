@@ -54,6 +54,7 @@
     <Compile Include="Tools\DebugLine.cs" />
     <Compile Include="Attributes\Extents.cs" />
     <Compile Include="Tools\Generator.cs" />
+    <Compile Include="Tools\GlobalManager.cs" />
     <Compile Include="Tools\InputManager.cs" />
     <Compile Include="Tools\Message.cs" />
     <Compile Include="Attributes\Padding.cs" />

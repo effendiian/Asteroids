@@ -1,4 +1,11 @@
-﻿using System.Collections.Generic;
+﻿/// Game1.cs - Version 3
+/// Author: Ian Effendi
+/// Date: 3.12.2017
+
+#region Using statements.
+
+// System calls.
+using System.Collections.Generic;
 using System;
 
 // MonoGame calls.
@@ -10,6 +17,8 @@ using Microsoft.Xna.Framework.Input;
 using Asteroids.Entities;
 using Asteroids.Tools;
 
+#endregion
+
 namespace Asteroids
 {
     /// <summary>
@@ -17,51 +26,54 @@ namespace Asteroids
     /// </summary>
     public class Game1 : Game
     {
-        public static Game1 MainGame;
-        public static Vector2 ScreenCenter = new Vector2(0.5f, 0.5f);
-        public static Vector2 ScreenBounds = new Vector2(1.0f, 1.0f);
-        public static Vector2 DisplayBounds = new Vector2(GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width, GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height);
-        public static GraphicsDeviceManager GraphicsDM;
-        public static ShapeDrawer Pen;
-        public static SpriteFont Small;
 
-        public static Random Random;
-        
-        public static void UpdateScreenDimensions(float width, float height)
-        {
-            MainGame.UpdateScreen(width, height);
-        }
+        #region Fields. // Private obj/data that will be passed to the global manager.
 
-        GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
-        ShapeDrawer shapeDrawer;
-               
+        /// <summary>
+        /// The GraphicsDeviceManager. This is used, mostly, for changing screen dimensions.
+        /// </summary>
+        private GraphicsDeviceManager graphics;
+
+        /// <summary>
+        /// The SpriteBatch. This is used to draw our 2D images to the screen.
+        /// </summary>
+        private SpriteBatch spriteBatch;
+
+        #endregion
+
+        #region Constructor.
+
+        /// <summary>
+        /// The only constructor for our game class. Sets up the Content and graphics objects.
+        /// </summary>
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-
-            GraphicsDM = graphics;
-            Random = new Random();
-            MainGame = this;
         }
-        
-    /// <summary>
-    /// Allows the game to perform any initialization it needs to before starting to run.
-    /// This is where it can query for any required services and load any non-graphic
-    /// related content.  Calling base.Initialize will enumerate through any components
-    /// and initialize them as well.
-    /// </summary>
-    protected override void Initialize()
+
+        #endregion
+
+        #region Initialization. // This is called before loading the content.
+
+        /// <summary>
+        /// Allows the game to perform any initialization it needs to before starting to run.
+        /// This is where it can query for any required services and load any non-graphic
+        /// related content.  Calling base.Initialize will enumerate through any components
+        /// and initialize them as well.
+        /// </summary>
+        protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            UpdateScreen(800, 600);
-            StateManager.Initialize();
-            InputManager.Initialize();    
+            GlobalManager.Initialize(this, graphics);  
 
             base.Initialize();
         }
-        
+
+        #endregion
+
+        #region Load Content. // This will load any resources that we need for the game.
+
         /// <summary>
         /// LoadContent will be called once per game and is the place to load
         /// all of your content.
@@ -72,25 +84,94 @@ namespace Asteroids
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
-            shapeDrawer = new ShapeDrawer(spriteBatch, Content.Load<SpriteFont>("assets/fonts/mainfont"), GraphicsDevice);
 
-            Pen = shapeDrawer;
-            Small = Content.Load<SpriteFont>("assets/fonts/smallfont");
+            // Set up font information collection.
+            List<FontIDs> fontIDs = new List<FontIDs>();
+            Dictionary<FontIDs, string> fontPaths = new Dictionary<FontIDs, string>();
+            LoadFonts(out fontIDs, out fontPaths);
+            
+            // Set up texture information collection.
+            List<TextureIDs> textureIDs = new List<TextureIDs>();
+            Dictionary<TextureIDs, string> texturePaths = new Dictionary<TextureIDs, string>();
+            LoadTextures(out textureIDs, out texturePaths);
 
-            // Get the textures.
-            Dictionary<StateManager.TextureIDs, Texture2D> textures = new Dictionary<StateManager.TextureIDs, Texture2D>();            
-            textures.Add(StateManager.TextureIDs.Button , Content.Load<Texture2D>("assets/ui/button_base"));
-            textures.Add(StateManager.TextureIDs.Asteroid1, Content.Load<Texture2D>("assets/asteroids/asteroid_01"));
-            textures.Add(StateManager.TextureIDs.Asteroid2, Content.Load<Texture2D>("assets/asteroids/asteroid_02"));
-            textures.Add(StateManager.TextureIDs.Asteroid3, Content.Load<Texture2D>("assets/asteroids/asteroid_03"));
-            textures.Add(StateManager.TextureIDs.Player, Content.Load<Texture2D>("assets/player/spaceship"));
-            textures.Add(StateManager.TextureIDs.Bullet, Content.Load<Texture2D>("assets/player/bullet"));
-            textures.Add(StateManager.TextureIDs.Test, Content.Load<Texture2D>("assets/player/bullet"));
-
-            // Create the states.
-            StateManager.CreateStates(spriteBatch, shapeDrawer, textures);            
+            // Load the global resources using the global manager.
+            GlobalManager.Load(spriteBatch, texturePaths, textureIDs, fontPaths, fontIDs); 
         }
         
+        /// <summary>
+        /// This will return a list of <see cref="FontIDs"/> and the paths of the <see cref="SpriteFont"/> objects associated with them.
+        /// </summary>
+        /// <param name="ids">List of <see cref="FontIDs"/> that resources have been added for.</param>
+        /// <param name="paths">List of <see cref="string"/> paths to <see cref="SpriteFont"/> objects.</param>
+        private void LoadFonts(out List<FontIDs> ids, out Dictionary<FontIDs, string> paths)
+        {
+            // Set up font information collection.
+            ids = new List<FontIDs>();
+            paths = new Dictionary<FontIDs, string>();
+
+            // Add fonts here.
+            LoadFont(FontIDs.Main, "assets/fonts/mainfont", ids, paths);
+            LoadFont(FontIDs.Small, "assets/fonts/smallfont", ids, paths);
+
+            // TODO: Add additional fonts here.
+            // LoadFont(FontID, Path to Font, ids, paths);
+        }
+
+        /// <summary>
+        /// This will add a font path to the dictionary under the provided <see cref="FontIDs"/> ID. 
+        /// </summary>
+        /// <param name="id"><see cref="FontIDs"/> to associate font with the <see cref="SpriteFont"/>.</param>
+        /// <param name="path">Path to the <see cref="SpriteFont"/> object.</param>
+        /// <param name="ids">List of <see cref="FontIDs"/> that resources have been added for.</param>
+        /// <param name="paths">List of <see cref="string"/> paths to <see cref="SpriteFont"/> objects.</param>
+        private void LoadFont(FontIDs id, string path, List<FontIDs> ids, Dictionary<FontIDs, string> paths)
+        {
+            ids.Add(id);
+            paths.Add(id, path);
+        }
+
+        /// <summary>
+        /// This will return a list of <see cref="TextureIDs"/> and the paths of the <see cref="Texture2D"/> objects associated with them.
+        /// </summary>
+        /// <param name="ids">List of <see cref="TextureIDs"/> that resources have been added for.</param>
+        /// <param name="paths">List of <see cref="string"/> paths to <see cref="Texture2D"/> objects.</param>
+        private void LoadTextures(out List<TextureIDs> ids, out Dictionary<TextureIDs, string> paths)
+        {
+            // Set up font information collection.
+            ids = new List<TextureIDs>();
+            paths = new Dictionary<TextureIDs, string>();
+
+            // Add fonts here.
+            LoadTexture(TextureIDs.Asteroid1, "assets/asteroids/asteroid_01", ids, paths);
+            LoadTexture(TextureIDs.Asteroid2, "assets/asteroids/asteroid_02", ids, paths);
+            LoadTexture(TextureIDs.Asteroid3, "assets/asteroids/asteroid_03", ids, paths);
+            LoadTexture(TextureIDs.Player, "assets/player/spaceship", ids, paths);
+            LoadTexture(TextureIDs.Bullet, "assets/player/bullet", ids, paths);
+            LoadTexture(TextureIDs.Button, "assets/ui/button_base", ids, paths);
+            LoadTexture(TextureIDs.Test, "assets/player/bullet", ids, paths);
+
+            // TODO: Add additional textures here.
+            // LoadTexture(TextureID, Path to Texture, ids, paths);
+        }
+
+        /// <summary>
+        /// This will add a font path to the dictionary under the provided <see cref="TextureIDs"/> ID. 
+        /// </summary>
+        /// <param name="id"><see cref="TextureIDs"/> to associate font with the <see cref="Texture2D"/>.</param>
+        /// <param name="path">Path to the <see cref="Texture2D"/> object.</param>
+        /// <param name="ids">List of <see cref="TextureIDs"/> that resources have been added for.</param>
+        /// <param name="paths">List of <see cref="string"/> paths to <see cref="Texture2D"/> objects.</param>
+        private void LoadTexture(TextureIDs id, string path, List<TextureIDs> ids, Dictionary<TextureIDs, string> paths)
+        {
+            ids.Add(id);
+            paths.Add(id, path);
+        }
+
+        #endregion
+
+        #region Unload Content. // (Empty code section). This is called once per game, before exiting, and unloads any resources.
+
         /// <summary>
         /// UnloadContent will be called once per game and is the place to unload
         /// game-specific content.
@@ -100,6 +181,10 @@ namespace Asteroids
             // TODO: Unload any non ContentManager content here
         }
 
+        #endregion
+
+        #region Update. // Calls the Update and UpdateGUI methods in the global manager.
+
         /// <summary>
         /// Allows the game to run logic such as updating the world,
         /// checking for collisions, gathering input, and playing audio.
@@ -107,27 +192,16 @@ namespace Asteroids
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-           if (StateManager.GetState() == StateManager.States.Quit)
-                Exit();
-
             // TODO: Add your update logic here
-            UpdateBack(gameTime);
-            UpdateGUI(gameTime);
+            GlobalManager.Update(gameTime);
+            GlobalManager.UpdateGUI(gameTime);
 
             base.Update(gameTime);
         }
 
-        private void UpdateBack(GameTime gameTime)
-        {
-            // TODO.
-            InputManager.Update(gameTime);
-            StateManager.Update(gameTime);
-        }
+        #endregion
 
-        private void UpdateGUI(GameTime gameTime)
-        {
-            StateManager.UpdateGUI(gameTime);            
-        }
+        #region Draw. // Begins and Ends the spritebatch but also calls the DrawBackground, Draw, and DrawGUI methods in the global manager.
 
         /// <summary>
         /// This is called when the game should draw itself.
@@ -135,78 +209,20 @@ namespace Asteroids
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(StateManager.Background);
+            GlobalManager.DrawBackground();
 
             // TODO: Add your drawing code here
             spriteBatch.Begin();
 
-            Draw();
-            DrawGUI();
+            GlobalManager.Draw();
+            GlobalManager.DrawGUI();
 
             spriteBatch.End();
 
             base.Draw(gameTime);
         }
 
-        private void Draw()
-        {
-            StateManager.Draw();
-        }
-
-        private void DrawGUI()
-        {
-            StateManager.DrawGUI(shapeDrawer);
-        }
-
-        private void DrawTestGUI()
-        {
-            int height = (int)shapeDrawer.StringDimensions("A").Y;
-
-            shapeDrawer.DrawString((int)ScreenCenter.X, (int)ScreenCenter.Y - height, Color.White, "This is a left test.", ShapeDrawer.LEFT_ALIGN);
-
-            shapeDrawer.DrawString((int)ScreenCenter.X, (int)ScreenCenter.Y, Color.White, "This is a center test.", ShapeDrawer.CENTER_ALIGN);
-
-            shapeDrawer.DrawString((int)ScreenCenter.X, (int)ScreenCenter.Y + height, Color.White, "This is a right test.", ShapeDrawer.RIGHT_ALIGN);
-
-            shapeDrawer.DrawString(0, 0, Color.White, "This is a default test.");
-        }
-
-        // Update dimension variables.
-        public void UpdateScreen(float screenWidth, float screenHeight)
-        {
-            graphics.PreferredBackBufferWidth = (int)Math.Abs(screenWidth);
-            graphics.PreferredBackBufferHeight = (int)Math.Abs(screenHeight);
-            graphics.ApplyChanges();
-
-            ScreenBounds = new Vector2(screenWidth, screenHeight);
-            ScreenCenter = ScreenBounds * 0.5f;
-            DisplayBounds = new Vector2(GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width, GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height);
-
-            // Reset window position.
-            int w = graphics.PreferredBackBufferWidth;
-            int h = graphics.PreferredBackBufferHeight;
-
-            int dW = (int)DisplayBounds.X;
-            int dH = (int)DisplayBounds.Y;
-
-            if (w != dW)
-            {
-                graphics.IsFullScreen = false;
-                this.Window.Position = new Point(((int)(dW / 2) - ((int)ScreenCenter.X)), ((int)(dH / 2) - ((int)ScreenCenter.Y)));
-            }
-            else
-            {
-                graphics.IsFullScreen = true;
-            }
-
-            graphics.ApplyChanges();
-        }
-
-        // Update dimension variables.
-        public void UpdateScreen()
-        {
-            UpdateScreen(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
-        }
+        #endregion
 
     }
 }
