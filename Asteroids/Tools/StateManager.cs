@@ -15,6 +15,42 @@ using Asteroids.Attributes;
 
 namespace Asteroids.Tools
 {
+    // Actions.
+    public enum Actions
+    {
+        Start,
+        Quit,
+        Back,
+        Pause,
+        Resume,
+        Scores,
+        Options,
+        Dimensions
+    }
+
+
+    public enum States
+    {
+        Pause,
+        Options,
+        Main,
+        Arena,
+        Gameover,
+        Quit
+    }
+
+    // Objects.
+    public enum TextureIDs
+    {
+        Button,
+        Player,
+        Bullet,
+        Asteroid1,
+        Asteroid2,
+        Asteroid3,
+        Test
+    }
+
     public class StateManager
     {
         // States.
@@ -24,40 +60,6 @@ namespace Asteroids.Tools
         private static Dictionary<States, List<Button>> stateButtons;
         private static List<Message> messages;
 
-        // Actions.
-        public enum Actions
-        {
-            Start,
-            Quit,
-            Back,
-            Pause,
-            Resume,
-            Scores,
-            Options,
-            Dimensions
-        }
-
-        // Objects.
-        public enum TextureIDs
-        {
-            Button,
-            Player,
-            Bullet,
-            Asteroid1,
-            Asteroid2,
-            Asteroid3,
-            Test
-        }
-
-        public enum States
-        {
-            Pause,
-            Options,
-            Main,
-            Arena,
-            Gameover,
-            Quit
-        }
         
         private static States currState;
         private static States prevState;
