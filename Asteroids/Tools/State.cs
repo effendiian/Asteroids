@@ -24,7 +24,7 @@ namespace Asteroids.Tools
     /// <summary>
     /// The 'State' of the game. Represents a 'situation' the game might find itself in and the entities/buttons involved with that context.
     /// </summary>
-    public abstract class State
+    public class State
     {
 
         #region Fields. // Private data associated with a state.
@@ -32,7 +32,7 @@ namespace Asteroids.Tools
         /// <summary>
         /// The state's type.
         /// </summary>
-        private States stateType;
+        private StateType stateType;
 
         /// <summary>
         /// Stores the scale of the entities inside the current state.
@@ -80,7 +80,7 @@ namespace Asteroids.Tools
         /// <summary>
         /// The type of state this state is.
         /// </summary>
-        public States StateType
+        public StateType StateType
         {
             get { return this.stateType; }
             private set { this.stateType = value; }
@@ -193,7 +193,7 @@ namespace Asteroids.Tools
         /// </summary>
         /// <param name="set">The colors to to use for this state.</param>
         /// <param name="_scale">The scale to draw the items in this state.</param>
-        public State(States type, ColorSet set, float _scale = 1.0f)
+        public State(StateType type, ColorSet set, float _scale = 1.0f)
         {
             this.stateType = type;
             this.colorset = new ColorSet();
@@ -213,7 +213,7 @@ namespace Asteroids.Tools
         /// <param name="_draw">The color to draw the UI.</param>
         /// <param name="_bg">The color to draw the background.</param>
         /// <param name="_scale">The scale to draw the items in this state.</param>
-        public State(States type, Color _draw, Color _bg, float _scale = 1.0f)
+        public State(StateType type, Color _draw, Color _bg, float _scale = 1.0f)
         {
             this.stateType = type;
             this.colorset = new ColorSet(_draw, null, null, null, _bg);
@@ -566,7 +566,7 @@ namespace Asteroids.Tools
         /// <summary>
         /// Bind keys to the control scheme for the given state.
         /// </summary>
-        protected abstract void BindKeys();
+        protected virtual void BindKeys() { }
 
         /// <summary>
         /// Create the control scheme to listen for the debug key press specified.

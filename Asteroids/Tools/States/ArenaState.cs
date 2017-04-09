@@ -27,14 +27,14 @@ namespace Asteroids.Tools.States
     public class ArenaState : State
     {
 
-        #region Constructors. // Sets this state's States enum flag to States.Arena.
+        #region Constructors. // Sets this state's States enum flag to StateType.Arena.
 
-        public ArenaState(ColorSet set, float scale = 1.0f) : base(States.Arena, set, scale)
+        public ArenaState(ColorSet set, float scale = 1.0f) : base(StateType.Arena, set, scale)
         {
             // Any special instructions for the arena should take place here.
         }
 
-        public ArenaState(Color draw, Color bg, float scale = 1.0f) : base(States.Arena, draw, bg, scale)
+        public ArenaState(Color draw, Color bg, float scale = 1.0f) : base(StateType.Arena, draw, bg, scale)
         {
             // Any special instructions for the arena should take place here.
         }

@@ -23,12 +23,12 @@ namespace Asteroids.Tools.States
 
         #region Constructors. // Sets this state's States enum flag to States.Main.
 
-        public MainMenuState(ColorSet set, float scale = 1.0f) : base(States.Main, set, scale)
+        public MainMenuState(ColorSet set, float scale = 1.0f) : base(StateType.Main, set, scale)
         {
             // Any special instructions for the main menu should take place here.
         }
 
-        public MainMenuState(Color draw, Color bg, float scale = 1.0f) : base(States.Main, draw, bg, scale)
+        public MainMenuState(Color draw, Color bg, float scale = 1.0f) : base(StateType.Main, draw, bg, scale)
         {
             // Any special instructions for the main menu should take place here.
         }
@@ -81,17 +81,17 @@ namespace Asteroids.Tools.States
 
                 if (IsActionFired(Actions.Start))
                 {
-                    StateManager.Start();
+                    StateManager.StartGame();
                 }
 
                 if (IsActionFired(Actions.Options))
                 {
-                    StateManager.ChangeState(States.Options);
+                    StateManager.ChangeState(StateType.Options);
                 }
 
                 if (IsActionFired(Actions.Scores))
                 {
-                    StateManager.ChangeState(States.Scores);
+                    StateManager.ChangeState(StateType.Scores);
                 }
             }
         }

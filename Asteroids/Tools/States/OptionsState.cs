@@ -29,12 +29,12 @@ namespace Asteroids.Tools.States
 
         #region Constructors. // Sets this state's States enum flag to States.Options.
 
-        public OptionsState(ColorSet set, float scale = 1.0f) : base(States.Options, set, scale)
+        public OptionsState(ColorSet set, float scale = 1.0f) : base(StateType.Options, set, scale)
         {
             // Any special instructions for the options menu should take place here.
         }
 
-        public OptionsState(Color draw, Color bg, float scale = 1.0f) : base(States.Options, draw, bg, scale)
+        public OptionsState(Color draw, Color bg, float scale = 1.0f) : base(StateType.Options, draw, bg, scale)
         {
             // Any special instructions for the options menu should take place here.
         }
@@ -69,7 +69,7 @@ namespace Asteroids.Tools.States
                 if (Controls.IsFired(Commands.Back)
                     || GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 {
-                    StateManager.ChangeState(States.Main);
+                    StateManager.ChangeState(StateType.Main);
                 }
             }
         }
@@ -88,7 +88,7 @@ namespace Asteroids.Tools.States
 
                 if (IsActionFired(Actions.Back))
                 {
-                    StateManager.ChangeState(States.Main);
+                    StateManager.ChangeState(StateType.Main);
                 }
             }
         }

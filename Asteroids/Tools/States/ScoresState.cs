@@ -27,14 +27,14 @@ namespace Asteroids.Tools.States
     public class ScoresState : State
     {
 
-        #region Constructors. // Sets this state's States enum flag to States.Gameover.
+        #region Constructors. // Sets this state's States enum flag to StateType.Gameover.
 
-        public ScoresState(ColorSet set, float scale = 1.0f) : base(States.Gameover, set, scale)
+        public ScoresState(ColorSet set, float scale = 1.0f) : base(StateType.Gameover, set, scale)
         {
             // Any special instructions for the scores menu should take place here.
         }
 
-        public ScoresState(Color draw, Color bg, float scale = 1.0f) : base(States.Gameover, draw, bg, scale)
+        public ScoresState(Color draw, Color bg, float scale = 1.0f) : base(StateType.Gameover, draw, bg, scale)
         {
             // Any special instructions for the scores menu should take place here.
         }
@@ -69,7 +69,7 @@ namespace Asteroids.Tools.States
                 if (Controls.IsFired(Commands.Back)
                     || GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 {
-                    StateManager.ChangeState(States.Main);
+                    StateManager.ChangeState(StateType.Main);
                 }
             }
         }
@@ -83,7 +83,7 @@ namespace Asteroids.Tools.States
             {
                 if (IsActionFired(Actions.Back))
                 {
-                    StateManager.ChangeState(States.Main);
+                    StateManager.ChangeState(StateType.Main);
                 }
             }
         }

@@ -29,12 +29,12 @@ namespace Asteroids.Tools.States
 
         #region Constructors. // Sets this state's States enum flag to States.Pause.
 
-        public PauseState(ColorSet set, float scale = 1.0f) : base(States.Pause, set, scale)
+        public PauseState(ColorSet set, float scale = 1.0f) : base(StateType.Pause, set, scale)
         {
             // Any special instructions for the pause menu should take place here.
         }
 
-        public PauseState(Color draw, Color bg, float scale = 1.0f) : base(States.Pause, draw, bg, scale)
+        public PauseState(Color draw, Color bg, float scale = 1.0f) : base(StateType.Pause, draw, bg, scale)
         {
             // Any special instructions for the pause menu should take place here.
         }
@@ -76,7 +76,7 @@ namespace Asteroids.Tools.States
 
                 if (Controls.IsFired(Commands.Back))
                 {
-                    StateManager.ChangeState(States.Main);
+                    StateManager.ChangeState(StateType.Main);
                 }
             }
         }
