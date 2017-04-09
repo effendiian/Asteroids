@@ -5,19 +5,20 @@
 #region Using statements.
 
 // System using statements.
-
-// MonoGame using statements.
-
-// Asteroids using statements.
-
-
-#endregion
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
+// MonoGame using statements.
+using Microsoft.Xna.Framework;
+
+// Asteroids using statements.
+using Asteroids.Tools;
+
+
+#endregion
 
 namespace Asteroids.Tools.States
 {
@@ -29,7 +30,7 @@ namespace Asteroids.Tools.States
             // Any special instructions for the main menu should take place here.
         }
 
-        public MainMenuState(Color draw, Color bg, float scale = 1.0f) : base(States.Main, set, scale)
+        public MainMenuState(Color draw, Color bg, float scale = 1.0f) : base(States.Main, draw, bg, scale)
         {
             // Any special instructions for the main menu should take place here.
         }
