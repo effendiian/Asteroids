@@ -110,22 +110,6 @@ namespace Asteroids.Tools.States
 
         #region Draw methods. // Draw calls for the main menu.
         
-        /// <summary>
-        /// Draw the GUI for the main menu.
-        /// </summary>
-        public override void DrawGUI()
-        {
-            base.DrawGUI();
-
-            if (Debug)
-            {
-                string msg = this.ToString();
-                Padding padding = new Padding(0, GetStringHeight(msg));
-                Vector2 position = new Vector2(10, padding.Y);
-                AddMessage(this.ToString(), position, padding, this.DrawColor, 1, ShapeDrawer.LEFT_ALIGN);
-            }
-        }
-
         #endregion
 
         #endregion

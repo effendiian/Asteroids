@@ -1,4 +1,4 @@
-﻿/// ArenaState.cs - Version 1.
+﻿/// PauseState.cs - Version 1.
 /// Author: Ian Effendi
 /// Date: 4.9.2017
 
@@ -22,21 +22,21 @@ using Asteroids.Entities;
 namespace Asteroids.Tools.States
 {
     /// <summary>
-    /// The ArenaState stores the functionality for States.Arena enum.
+    /// The PauseState stores the functionality for States.Pause enum.
     /// </summary>
-    public class ArenaState : State
+    public class PauseState : State
     {
 
-        #region Constructors. // Sets this state's States enum flag to States.Arena.
+        #region Constructors. // Sets this state's States enum flag to States.Pause.
 
-        public ArenaState(ColorSet set, float scale = 1.0f) : base(States.Arena, set, scale)
+        public PauseState(ColorSet set, float scale = 1.0f) : base(States.Pause, set, scale)
         {
-            // Any special instructions for the arena should take place here.
+            // Any special instructions for the pause menu should take place here.
         }
 
-        public ArenaState(Color draw, Color bg, float scale = 1.0f) : base(States.Arena, draw, bg, scale)
+        public PauseState(Color draw, Color bg, float scale = 1.0f) : base(States.Pause, draw, bg, scale)
         {
-            // Any special instructions for the arena should take place here.
+            // Any special instructions for the pause menu should take place here.
         }
 
         #endregion
@@ -44,7 +44,7 @@ namespace Asteroids.Tools.States
         #region Methods. // Methods that have been overriden from the parent class.
 
         #region Reset/Start/Stop methods. // Called in various types of state changes.
-        
+
         /// <summary>
         /// Reset all entities and then start the game.
         /// </summary>
@@ -56,16 +56,16 @@ namespace Asteroids.Tools.States
 
         #endregion
 
-        #region Update methods. // Update calls for the Arena.
+        #region Update methods. // Update calls for the Pause.
 
         /// <summary>
-        /// Bind the debug key and escape key for the Arena.
+        /// Bind the debug key and escape key for the Pause.
         /// </summary>
         protected override void BindKeys()
         {
             Controls.Bind(Commands.Debug, Keys.D, ActionType.Released);
             Controls.Bind(Commands.Pause, Keys.P, ActionType.Released);
-            Controls.Bind(Commands.Pause, Keys.Escape, ActionType.Released);
+            Controls.Bind(Commands.Back, Keys.Escape, ActionType.Released);
         }
 
         /// <summary>
@@ -86,6 +86,11 @@ namespace Asteroids.Tools.States
                 {
                     StateManager.TogglePause();
                 }
+
+                if (Controls.IsFired(Commands.Back))
+                {
+                    StateManager.ChangeState(States.Main);
+                }
             }
         }
 
@@ -96,9 +101,14 @@ namespace Asteroids.Tools.States
         {
             if (HasButtons)
             {
-                if (IsActionFired(Actions.Pause))
+                if (IsActionFired(Actions.Resume))
                 {
                     StateManager.TogglePause();
+                }
+
+                if (IsActionFired(Actions.Quit))
+                {
+                    StateManager.Quit();
                 }
             }
         }
@@ -110,62 +120,31 @@ namespace Asteroids.Tools.States
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
-            TestMoverCollision(); // The mover collision.
         }
-
+        
         /// <summary>
-        /// Test mover collisions.
+        /// Queue all the GUI messages that need to be printed.
         /// </summary>
-        private void TestMoverCollision()
+        protected override void QueueGUIMessages()
         {
-            if (Exists(EntityType.Test))
-            {
-                List<Entity> tests = GetEntities(EntityType.Test);
-                List<Entity> npcs = new List<Entity>();
-                TestMover player = null;
+            string guiMessage = "";
 
-                foreach (Entity e in tests)
-                {
-                    if (e is TestMover)
-                    {
-                        if (((TestMover)e).PlayerControl)
-                        {
-                            player = (TestMover)e;
-                        }
-                        else
-                        {
-                            npcs.Add(e);
-                        }
-                    }
-                }
+            guiMessage += "Press the ESC key to return to the main menu." + "\n";
+            guiMessage += "Press the P key to resume the game." + "\n";
+            guiMessage += "Press the Q key to quit to the desktop." + "\n";
+            guiMessage += "Throttle and Brake with W and S. Rotate with A and D." + "\n";
+            guiMessage += "Turn with the Left and Right arrow keys.";
 
-                if (player != null)
-                {
-                    foreach (Entity e in tests)
-                    {
-                        TestMover test = (TestMover)e;
-
-                        if (test.Collision(player))
-                        {
-                            // test.DrawColor = Color.Red;
-                            test.Randomize();
-                        }
-                        else if (test.Proximity(player))
-                        {
-                            // test.DrawColor = Color.LimeGreen;
-                        }
-                        else
-                        {
-                            // test.DrawColor = Color.White;
-                        }
-                    }
-                }
-            }
+            // What to do during the pause functionality.  
+            // Print message: Escape to quit. P to resume the game.
+            Vector2 position = this.GetScreenCenter();
+            Padding padding = new Padding(0, this.GetStringHeight(guiMessage));
+            AddMessage(guiMessage, position, padding, this.DrawColor, 1, ShapeDrawer.CENTER_ALIGN);
         }
 
         #endregion
 
-        #region Draw methods. // Draw calls for the Arena.
+        #region Draw methods. // Draw calls for the Pause.
 
         #endregion
 

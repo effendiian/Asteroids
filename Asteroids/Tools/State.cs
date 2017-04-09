@@ -201,6 +201,7 @@ namespace Asteroids.Tools
             this.entities = new List<Entity>();
             this.buttons = new List<Button>();
             this.scheme = new ControlScheme();
+            this._debug = false;
 
             SetScale(_scale);
             BindKeys();
@@ -219,6 +220,7 @@ namespace Asteroids.Tools
             this.entities = new List<Entity>();
             this.buttons = new List<Button>();
             this.scheme = new ControlScheme();
+            this._debug = false;
 
             SetScale(_scale);
             BindKeys();
@@ -629,7 +631,9 @@ namespace Asteroids.Tools
         public virtual void UpdateGUI(GameTime gameTime)
         {
             HandleGUIInput();
+            QueueGUIMessages();
             UpdateGUI(gameTime, this.buttons);
+            QueueDebugMessages();
         }
 
         /// <summary>
@@ -655,6 +659,28 @@ namespace Asteroids.Tools
             foreach (Button button in list)
             {
                 button.Update(gameTime);
+            }
+        }
+
+        /// <summary>
+        /// Text that gets drawn to the screen for the user to read.
+        /// </summary>
+        protected virtual void QueueGUIMessages()
+        {
+            // Stub. Child classes should override this method, if they need to use it.
+        }
+
+        /// <summary>
+        /// Text that gets drawn to the screen for debugging purposes.
+        /// </summary>
+        protected virtual void QueueDebugMessages()
+        {
+            if (Debug)
+            {
+                string msg = this.ToString();
+                Padding padding = new Padding(0, GetStringHeight(msg));
+                Vector2 position = new Vector2(10, padding.Y);
+                AddMessage(this.ToString(), position, padding, this.DrawColor, 1, ShapeDrawer.LEFT_ALIGN);
             }
         }
 
