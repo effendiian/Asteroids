@@ -11,9 +11,11 @@ using System.Linq;
 // Monogame using statements.
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Graphics;
 
 // Asteroid using statments.
 using Asteroids.Entities;
+using Asteroids.Attributes;
 
 #endregion
 
@@ -57,6 +59,11 @@ namespace Asteroids.Tools
         /// </summary>
         private ControlScheme scheme;
 
+        /// <summary>
+        /// Maximum amount of entities that can be inside a state.
+        /// </summary>
+        private int entityCap;
+
         #endregion
 
         #region Flags. // Flags that hold boolean status information.
@@ -93,6 +100,22 @@ namespace Asteroids.Tools
         public List<Button> AllButtons
         {
             get { return this.GetButtons(); }
+        }
+
+        /// <summary>
+        /// Returns the number of entities inside the state.
+        /// </summary>
+        public int Count
+        {
+            get { return this.entities.Count(); }
+        }
+
+        /// <summary>
+        /// Returns the maximum amount of entities allowed to exist within a state.
+        /// </summary>
+        public int Capacity
+        {
+            get { return this.entityCap; }
         }
 
         /// <summary>
@@ -136,6 +159,14 @@ namespace Asteroids.Tools
         }
 
         /// <summary>
+        /// Returns the <see cref="ControlScheme"/> object.
+        /// </summary>
+        protected ControlScheme Controls
+        {
+            get { return this.scheme; }
+        }
+
+        /// <summary>
         /// Scale to set the entities when drawing.
         /// </summary>
         public float Scale
@@ -172,6 +203,7 @@ namespace Asteroids.Tools
             this.scheme = new ControlScheme();
 
             SetScale(_scale);
+            BindKeys();
         }
 
         /// <summary>
@@ -189,6 +221,7 @@ namespace Asteroids.Tools
             this.scheme = new ControlScheme();
 
             SetScale(_scale);
+            BindKeys();
         }
 
         #endregion
@@ -351,7 +384,10 @@ namespace Asteroids.Tools
         /// <param name="e">Entity to add.</param>
         public void AddEntity(Entity e)
         {
-            this.entities.Add(e);
+            if (this.Count < this.Capacity)
+            {
+                this.entities.Add(e);
+            }
         }
 
         #endregion
@@ -392,6 +428,35 @@ namespace Asteroids.Tools
         public void AddButton(Button b)
         {
             this.buttons.Add(b);
+        }
+
+        /// <summary>
+        /// Searches state for a matching button and then checks for its released state.
+        /// </summary>
+        /// <param name="action">Action to perform on button press.</param>
+        /// <returns>Returns true if button exists and is fired.</returns>
+        protected bool IsActionFired(Actions action)
+        {
+            Button button = GetButton(action); // May return null.
+            return IsButtonFired(button, action);
+        }
+
+        /// <summary>
+        /// Determines if a given button matching the action has been fired.
+        /// </summary>
+        /// <param name="button">Button to check.</param>
+        /// <param name="action">Action to perform on button press.</param>
+        /// <returns>Returns true if button is not null, has a matching action, and has been released.</returns>
+        protected bool IsButtonFired(Button button, Actions action)
+        {
+            if (button == null || button.Action != action)
+            {
+                return false;
+            }
+            else
+            {
+                return button.IsReleased();
+            }
         }
 
         #endregion
@@ -494,6 +559,11 @@ namespace Asteroids.Tools
         #region Update methods. // Input handling methods and update functionality.
 
         /// <summary>
+        /// Bind keys to the control scheme for the given state.
+        /// </summary>
+        protected abstract void BindKeys();
+
+        /// <summary>
         /// Create the control scheme to listen for the debug key press specified.
         /// </summary>
         /// <param name="key"></param>
@@ -501,7 +571,7 @@ namespace Asteroids.Tools
         {
             scheme.Bind(Commands.Debug, key, ActionType.Released);
         }
-
+        
         /// <summary>
         /// Handle any input that needs to be checked on a State-level scope.
         /// </summary>
@@ -517,6 +587,17 @@ namespace Asteroids.Tools
         }
 
         /// <summary>
+        /// Handles all button press inputs for a state.
+        /// </summary>
+        protected virtual void HandleGUIInput()
+        {
+            if (HasButtons)
+            {
+                // Button input goes here.
+            }
+        }
+
+        /// <summary>
         /// Update the entities and check for input.
         /// </summary>
         /// <param name="gameTime">A snapshot of the current elapsed time.</param>
@@ -524,6 +605,8 @@ namespace Asteroids.Tools
         {
             HandleInput();
             Update(gameTime, this.entities);
+
+            UpdateGUI(gameTime);
         }
 
         /// <summary>
@@ -545,6 +628,7 @@ namespace Asteroids.Tools
         /// <param name="gameTime">A snapshot of the current elapsed time.</param>
         public virtual void UpdateGUI(GameTime gameTime)
         {
+            HandleGUIInput();
             UpdateGUI(gameTime, this.buttons);
         }
 
@@ -602,22 +686,31 @@ namespace Asteroids.Tools
         }
 
         /// <summary>
+        /// Draw a series of entities.
+        /// </summary>
+        protected virtual void DrawEntityGUI()
+        {
+            DrawGUI(GetEntities(EntityType.Asteroid),
+                GetEntities("test")); // Make DrawGUI calls for all entities that match the calls.
+        }
+
+        /// <summary>
+        /// Draw the buttons.
+        /// </summary>
+        protected virtual void DrawButtons()
+        {
+            DrawGUI(this.buttons);
+        }
+
+        /// <summary>
         /// Draw the GUI of any entities that require it and draw all buttons.
         /// </summary>
         public virtual void DrawGUI()
         {
-            DrawGUI(this.buttons);
-
-            foreach (Entity asteroid in GetEntities(EntityType.Asteroid))
-            {
-                asteroid.DrawGUI();
-            }
-
-            foreach (Entity test in GetEntities("!Test"))
-            {
-                test.DrawGUI();
-            }
+            DrawEntityGUI(); // Draw all entity GUI information.
+            DrawButtons(); // Draw the buttons above the entity GUI.
         }
+
 
         /// <summary>
         /// Draw the GUI for a list of entities.
@@ -631,6 +724,18 @@ namespace Asteroids.Tools
                 {
                     entity.DrawGUI();
                 }
+            }
+        }
+
+        /// <summary>
+        /// Draw the GUI for a concatenated amount of lists.
+        /// </summary>
+        /// <param name="lists">An array of lists.</param>
+        public void DrawGUI(params List<Entity>[] lists)
+        {
+            foreach (List<Entity> list in lists)
+            {
+                DrawGUI(list);
             }
         }
 
@@ -714,6 +819,69 @@ namespace Asteroids.Tools
         public Vector2 GetScreenBounds()
         {
             return GlobalManager.ScreenBounds;
+        }
+
+        /// <summary>
+        /// Return the string dimensions for a particular message.
+        /// </summary>
+        /// <param name="message">Message to check size of.</param>
+        /// <param name="font">Optional font to choose a SpriteFont other than the main one.</param>
+        /// <returns>Returns a vector containing the dimensions.</returns>
+        public Vector2 GetStringDimensions(string message, SpriteFont font = null)
+        {
+            return GlobalManager.Pen.StringDimensions(message, font);
+        }
+
+        /// <summary>
+        /// Return the string width for a particular message.
+        /// </summary>
+        /// <param name="message">Message to check size of.</param>
+        /// <param name="font">Optional font to choose a SpriteFont other than the main one.</param>
+        /// <returns>Returns the width as a float.</returns>
+        public float GetStringWidth(string message, SpriteFont font = null)
+        {
+            return GetStringDimensions(message, font).X;
+        }
+
+        /// <summary>
+        /// Return the string height for a particular message.
+        /// </summary>
+        /// <param name="message">Message to check size of.</param>
+        /// <param name="font">Optional font to choose a SpriteFont other than the main one.</param>
+        /// <returns>Returns the height as a float.</returns>
+        public float GetStringHeight(string message, SpriteFont font = null)
+        {
+            return GetStringDimensions(message, font).Y;
+        }
+
+        /// <summary>
+        /// Wrapper function that will add a message to the global state manager queue.
+        /// </summary>
+        /// <param name="msg">Message to print.</param>
+        /// <param name="position">Position of the message.</param>
+        /// <param name="padding">Padding to apply.</param>
+        /// <param name="col">Color to draw the message in.</param>
+        /// <param name="order">The order value.</param>
+        /// <param name="alignment">Alignment type to print message with.</param>
+        public void AddMessage(string msg, Vector2 position, Padding padding, Color col, int order = 1, int alignment = ShapeDrawer.LEFT_ALIGN)
+        {
+            StateManager.AddMessage(new Message(msg, position, padding, col, order, alignment));
+        }
+        
+        /// <summary>
+        /// Return the state's values 
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            string value = "";
+
+            value += "Current State: " + StateManager.GetStateTypeAsString(this.stateType) + "\n";
+            value += "Entities: [" + this.Count + "\\" + this.Capacity + "] | ";
+            value += "Buttons: [" + this.buttons.Count() + "] | ";
+            value += "Scale: [" + (this.Scale * 100) + "%]\n";
+
+            return value;
         }
 
         #endregion

@@ -17,6 +17,7 @@ using Microsoft.Xna.Framework.Input; // For dealing with the Keys enum.
 // Attributes aren't tools
 namespace Asteroids.Tools
 {
+
     #region Enums. // Contains Commands and ActionType enums, used for finding keypress input.
 
     #region Commands enum. // List of commands players can call.

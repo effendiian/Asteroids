@@ -220,11 +220,8 @@ namespace Asteroids.Tools
                 s.SetScale(_scale);
             }
         }
-
-
-
+        
         #endregion
-
 
         #endregion
 
@@ -857,6 +854,29 @@ namespace Asteroids.Tools
         public static void AddMessage(Message msg)
         {
             messages.Add(msg);
-        }        
+        }
+        
+        public static string GetStateTypeAsString(States type)
+        {
+            // http://stackoverflow.com/questions/630803/associating-enums-with-strings-in-c-sharp
+
+            switch (type)
+            {
+                case States.Arena:
+                    return "[Arena]";
+                case States.Gameover:
+                    return "[Scores]";
+                case States.Main:
+                    return "[Main]";
+                case States.Options:
+                    return "[Options]";
+                case States.Pause:
+                    return "[Pause]";
+                case States.Quit:
+                    return "[Quit]";
+            }
+
+            return "[Error]";
+        }
     }
 }
