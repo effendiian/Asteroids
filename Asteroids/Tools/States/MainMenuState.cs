@@ -15,6 +15,9 @@ using Asteroids.Attributes;
 
 namespace Asteroids.Tools.States
 {
+    /// <summary>
+    /// The MainMenuState stores the functionality for States.Menu enum.
+    /// </summary>
     public class MainMenuState : State
     {
 
@@ -32,7 +35,7 @@ namespace Asteroids.Tools.States
 
         #endregion
 
-        #region Child methods. // Methods that have been overriden from the parent class.
+        #region Methods. // Methods that have been overriden from the parent class.
 
         #region Reset/Start/Stop methods. // Called in various types of state changes.
 
@@ -125,12 +128,7 @@ namespace Asteroids.Tools.States
 
         #endregion
 
-
         #endregion
-
-        #region Service methods.
-
-        #endregion
-
+        
     }
 }
