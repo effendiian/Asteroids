@@ -1,4 +1,4 @@
-﻿/// PauseState.cs - Version 1.
+﻿/// OptionsState.cs - Version 1.
 /// Author: Ian Effendi
 /// Date: 4.9.2017
 
@@ -22,21 +22,21 @@ using Asteroids.Entities;
 namespace Asteroids.Tools.States
 {
     /// <summary>
-    /// The PauseState stores the functionality for States.Pause enum.
+    /// The OptionsState stores the functionality for States.Options enum.
     /// </summary>
-    public class PauseState : State
+    public class OptionsState : State
     {
 
-        #region Constructors. // Sets this state's States enum flag to States.Pause.
+        #region Constructors. // Sets this state's States enum flag to States.Options.
 
-        public PauseState(ColorSet set, float scale = 1.0f) : base(States.Pause, set, scale)
+        public OptionsState(ColorSet set, float scale = 1.0f) : base(States.Options, set, scale)
         {
-            // Any special instructions for the pause menu should take place here.
+            // Any special instructions for the options menu should take place here.
         }
 
-        public PauseState(Color draw, Color bg, float scale = 1.0f) : base(States.Pause, draw, bg, scale)
+        public OptionsState(Color draw, Color bg, float scale = 1.0f) : base(States.Options, draw, bg, scale)
         {
-            // Any special instructions for the pause menu should take place here.
+            // Any special instructions for the options menu should take place here.
         }
 
         #endregion
@@ -56,15 +56,14 @@ namespace Asteroids.Tools.States
 
         #endregion
 
-        #region Update methods. // Update calls for the Pause.
+        #region Update methods. // Update calls for the Options.
 
         /// <summary>
-        /// Bind the debug key and escape key for the Pause.
+        /// Bind the debug key and escape key for the Options.
         /// </summary>
         protected override void BindKeys()
         {
             Controls.Bind(Commands.Debug, Keys.D, ActionType.Released);
-            Controls.Bind(Commands.Pause, Keys.P, ActionType.Released);
             Controls.Bind(Commands.Back, Keys.Escape, ActionType.Released);
         }
 
@@ -80,14 +79,8 @@ namespace Asteroids.Tools.States
                     this.Debug = !Debug;
                 }
 
-                if (Controls.IsFired(Commands.Pause) 
-                    || GamePad.GetState(PlayerIndex.One).Buttons.Start == ButtonState.Pressed
+                if (Controls.IsFired(Commands.Back)
                     || GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
-                {
-                    StateManager.TogglePause();
-                }
-
-                if (Controls.IsFired(Commands.Back))
                 {
                     StateManager.ChangeState(States.Main);
                 }
@@ -101,33 +94,40 @@ namespace Asteroids.Tools.States
         {
             if (HasButtons)
             {
-                if (IsActionFired(Actions.Resume))
+                if (IsActionFired(Actions.Dimensions))
                 {
-                    StateManager.TogglePause();
+                    this.ChangeDimensions();
                 }
 
-                if (IsActionFired(Actions.Quit))
+                if (IsActionFired(Actions.Back))
                 {
-                    StateManager.Quit();
+                    StateManager.ChangeState(States.Main);
                 }
             }
         }
-        
+
         /// <summary>
-        /// Queue all the GUI messages that need to be printed.
+        /// Queue options menu instructions to the Messages system.
         /// </summary>
         protected override void QueueGUIMessages()
         {
             string guiMessage = "";
 
             guiMessage += "Press the ESC key to return to the main menu." + "\n";
-            guiMessage += "Press the P key to resume the game." + "\n";
-            guiMessage += "Press the Q key to quit to the desktop." + "\n";
-            guiMessage += "Throttle and Brake with W and S. Rotate with A and D." + "\n";
-            guiMessage += "Turn with the Left and Right arrow keys.";
+            guiMessage += "Current screen dimensions: " + this.GetScreenBounds() + "\n";
+            guiMessage += "Fullscreen: ";
 
-            // What to do during the pause functionality.  
-            // Print message: Escape to quit. P to resume the game.
+            if (GlobalManager.Graphics.IsFullScreen)
+            {
+                guiMessage += "On";
+            }
+            else
+            {
+                guiMessage += "Off";
+            }
+
+            guiMessage += "" + "\n";
+
             Vector2 position = this.GetScreenCenter();
             Padding padding = new Padding(0, this.GetStringHeight(guiMessage));
             AddMessage(guiMessage, position, padding, this.DrawColor, 1, ShapeDrawer.CENTER_ALIGN);
@@ -135,7 +135,42 @@ namespace Asteroids.Tools.States
 
         #endregion
 
-        #region Draw methods. // Draw calls for the Pause.
+        #region Draw methods. // Draw calls for the Options.
+
+        #endregion
+
+        #region Service methods. // Methods that add class functionality.
+
+        /// <summary>
+        /// Change the dimensions of the game screen.
+        /// </summary>
+        private void ChangeDimensions()
+        {
+            int height = 600;
+            int width = 800;
+
+            switch (GlobalManager.Graphics.PreferredBackBufferWidth)
+            {
+                case 1920:
+                    height = 600;
+                    width = 800;
+                    break;
+                case 1200:
+                    height = 1020;
+                    width = 1920;
+                    break;
+                case 800:
+                default:
+                    height = 720;
+                    width = 1200;
+                    break;
+            }
+
+            float _scale = 1.0f * (width / 800);
+
+            GlobalManager.UpdateScreen(width, height);
+            GlobalManager.SetScale(_scale);
+        }
 
         #endregion
 

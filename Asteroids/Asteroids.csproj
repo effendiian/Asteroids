@@ -64,6 +64,7 @@
     <Compile Include="Tools\StateManager.cs" />
     <Compile Include="Tools\States\ArenaState.cs" />
     <Compile Include="Tools\States\MainMenuState.cs" />
+    <Compile Include="Tools\States\OptionsState.cs" />
     <Compile Include="Tools\States\PauseState.cs" />
     <Compile Include="Tools\Timer.cs" />
   </ItemGroup>

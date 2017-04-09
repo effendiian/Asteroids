@@ -818,33 +818,6 @@ namespace Asteroids.Tools
             return currentState;
         }
 
-        private static void ChangeDimensions()
-        {
-            int height = 600;
-            int width = 800;
-
-            switch (GlobalManager.Graphics.PreferredBackBufferWidth)
-            {
-                case 1920:
-                    height = 600;
-                    width = 800;
-                    break;
-                case 1200:
-                    height = 1020;
-                    width = 1920;
-                    break;
-                case 800:
-                default:
-                    height = 720;
-                    width = 1200;
-                    break;
-            }
-
-            float _scale = 1.0f * (width / 800);
-
-            GlobalManager.UpdateScreen(width, height);
-            GlobalManager.SetScale(_scale);
-        }
         
         public static void AddMessage(string msg, Vector2 pos, Padding pad, Color draw, int order, int alignment)
         {

@@ -518,6 +518,7 @@ namespace Asteroids.Tools
         /// </summary>
         public virtual void Reset()
         {
+            this._debug = false; // Reset the debug flag to false.
             Reset(this.entities);
         }
 
@@ -539,6 +540,7 @@ namespace Asteroids.Tools
         /// </summary>
         public virtual void Start()
         {
+            this._debug = false; // Reset the debug flag to false.
             foreach (Entity entity in AllEntities)
             {
                 entity.Start();
@@ -550,6 +552,7 @@ namespace Asteroids.Tools
         /// </summary>
         public virtual void Stop()
         {
+            this._debug = false; // Reset the debug flag to false.
             foreach (Entity entity in AllEntities)
             {
                 entity.Stop();

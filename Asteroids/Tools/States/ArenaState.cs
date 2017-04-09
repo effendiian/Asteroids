@@ -106,7 +106,7 @@ namespace Asteroids.Tools.States
         /// <summary>
         /// Updates all entities and buttons.
         /// </summary>
-        /// <param name="gameTime"></param>
+        /// <param name="gameTime">Snapshot of time passed.</param>
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
