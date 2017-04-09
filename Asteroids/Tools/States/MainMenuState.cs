@@ -36,17 +36,7 @@ namespace Asteroids.Tools.States
         #endregion
 
         #region Methods. // Methods that have been overriden from the parent class.
-
-        #region Reset/Start/Stop methods. // Called in various types of state changes.
-
-        // Reset
-
-        // Start
-
-        // Stop
-
-        #endregion
-
+        
         #region Update methods. // Update calls for the main menu.
 
         /// <summary>
@@ -91,7 +81,7 @@ namespace Asteroids.Tools.States
 
                 if (IsActionFired(Actions.Start))
                 {
-                    StateManager.ChangeState(States.Arena);
+                    StateManager.Start();
                 }
 
                 if (IsActionFired(Actions.Options))
@@ -107,11 +97,7 @@ namespace Asteroids.Tools.States
         }
 
         #endregion
-
-        #region Draw methods. // Draw calls for the main menu.
         
-        #endregion
-
         #endregion
         
     }

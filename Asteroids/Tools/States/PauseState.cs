@@ -43,19 +43,6 @@ namespace Asteroids.Tools.States
 
         #region Methods. // Methods that have been overriden from the parent class.
 
-        #region Reset/Start/Stop methods. // Called in various types of state changes.
-
-        /// <summary>
-        /// Reset all entities and then start the game.
-        /// </summary>
-        public override void Start()
-        {
-            Reset();
-            base.Start();
-        }
-
-        #endregion
-
         #region Update methods. // Update calls for the Pause.
 
         /// <summary>
@@ -134,11 +121,7 @@ namespace Asteroids.Tools.States
         }
 
         #endregion
-
-        #region Draw methods. // Draw calls for the Pause.
-
-        #endregion
-
+        
         #endregion
 
     }

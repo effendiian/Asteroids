@@ -164,11 +164,7 @@ namespace Asteroids.Tools.States
         }
 
         #endregion
-
-        #region Draw methods. // Draw calls for the Arena.
-
-        #endregion
-
+        
         #endregion
 
     }
