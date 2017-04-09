@@ -62,6 +62,7 @@
     <Compile Include="Tools\ShapeDrawer.cs" />
     <Compile Include="Tools\State.cs" />
     <Compile Include="Tools\StateManager.cs" />
+    <Compile Include="Tools\States\ArenaState.cs" />
     <Compile Include="Tools\States\MainMenuState.cs" />
     <Compile Include="Tools\Timer.cs" />
   </ItemGroup>
