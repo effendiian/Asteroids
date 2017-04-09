@@ -22,11 +22,16 @@ namespace Asteroids.Tools
     /// <summary>
     /// The 'State' of the game. Represents a 'situation' the game might find itself in and the entities/buttons involved with that context.
     /// </summary>
-    public class State
+    public abstract class State
     {
 
         #region Fields. // Private data associated with a state.
-        
+
+        /// <summary>
+        /// The state's type.
+        /// </summary>
+        private States stateType;
+
         /// <summary>
         /// Stores the scale of the entities inside the current state.
         /// </summary>
@@ -64,6 +69,15 @@ namespace Asteroids.Tools
         #endregion
 
         #region Properties. // The properties that provide access to private data.
+
+        /// <summary>
+        /// The type of state this state is.
+        /// </summary>
+        public States StateType
+        {
+            get { return this.stateType; }
+            private set { this.stateType = value; }
+        }
 
         /// <summary>
         /// Returns a complete list of all the entities in the state.
@@ -148,8 +162,9 @@ namespace Asteroids.Tools
         /// </summary>
         /// <param name="set">The colors to to use for this state.</param>
         /// <param name="_scale">The scale to draw the items in this state.</param>
-        public State(ColorSet set, float _scale = 1.0f)
+        public State(States type, ColorSet set, float _scale = 1.0f)
         {
+            this.stateType = type;
             this.colorset = new ColorSet();
             this.colorset.AssignColors(set, ColorType.Draw, ColorType.Other); // Only get these colors from the pre-existing colorset.
             this.entities = new List<Entity>();
@@ -165,8 +180,9 @@ namespace Asteroids.Tools
         /// <param name="_draw">The color to draw the UI.</param>
         /// <param name="_bg">The color to draw the background.</param>
         /// <param name="_scale">The scale to draw the items in this state.</param>
-        public State(Color _draw, Color _bg, float _scale = 1.0f)
+        public State(States type, Color _draw, Color _bg, float _scale = 1.0f)
         {
+            this.stateType = type;
             this.colorset = new ColorSet(_draw, null, null, null, _bg);
             this.entities = new List<Entity>();
             this.buttons = new List<Button>();
@@ -433,7 +449,7 @@ namespace Asteroids.Tools
         /// <summary>
         /// Reset the state. (Calls reset for all entities).
         /// </summary>
-        public void Reset()
+        public virtual void Reset()
         {
             Reset(this.entities);
         }
@@ -442,7 +458,7 @@ namespace Asteroids.Tools
         /// Reset and enable entities within a specified list.
         /// </summary>
         /// <param name="list">List of entities to enable and reset.</param>
-        public void Reset(List<Entity> list)
+        public virtual void Reset(List<Entity> list)
         {
             foreach (Entity entity in list)
             {
@@ -481,7 +497,7 @@ namespace Asteroids.Tools
         /// Create the control scheme to listen for the debug key press specified.
         /// </summary>
         /// <param name="key"></param>
-        public void BindDebugKey(Keys key)
+        private void BindDebugKey(Keys key)
         {
             scheme.Bind(Commands.Debug, key, ActionType.Released);
         }
@@ -489,7 +505,7 @@ namespace Asteroids.Tools
         /// <summary>
         /// Handle any input that needs to be checked on a State-level scope.
         /// </summary>
-        private void HandleInput()
+        protected virtual void HandleInput()
         {
             if (!scheme.IsEmpty())
             {
@@ -504,7 +520,7 @@ namespace Asteroids.Tools
         /// Update the entities and check for input.
         /// </summary>
         /// <param name="gameTime">A snapshot of the current elapsed time.</param>
-        public void Update(GameTime gameTime)
+        public virtual void Update(GameTime gameTime)
         {
             HandleInput();
             Update(gameTime, this.entities);
@@ -527,7 +543,7 @@ namespace Asteroids.Tools
         /// Update the buttons.
         /// </summary>
         /// <param name="gameTime">A snapshot of the current elapsed time.</param>
-        public void UpdateGUI(GameTime gameTime)
+        public virtual void UpdateGUI(GameTime gameTime)
         {
             UpdateGUI(gameTime, this.buttons);
         }
@@ -565,7 +581,7 @@ namespace Asteroids.Tools
         /// <summary>
         /// Draw all entities in a given state.
         /// </summary>
-        public void Draw()
+        public virtual void Draw()
         {
             Draw(this.entities);
         }
@@ -588,7 +604,7 @@ namespace Asteroids.Tools
         /// <summary>
         /// Draw the GUI of any entities that require it and draw all buttons.
         /// </summary>
-        public void DrawGUI()
+        public virtual void DrawGUI()
         {
             DrawGUI(this.buttons);
 

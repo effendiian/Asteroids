@@ -24,7 +24,7 @@ using Microsoft.Xna.Framework.Input;
 namespace Asteroids.Tools
 {
 
-    #region Enums. // Contains definition for the FontIDs enum.
+    #region Enums. // Contains definition for the FontIDs and TextureIDs enums.
 
     /// <summary>
     /// FontIDs are the type of IDs to be used when drawing strings.
@@ -42,6 +42,48 @@ namespace Asteroids.Tools
         Small
     }
 
+
+    /// <summary>
+    /// TextureIDs are the type of IDs to be used when drawing images/sprites.
+    /// </summary>
+    public enum TextureIDs
+    {
+        /// <summary>
+        /// The base of the button.
+        /// </summary>
+        Button,
+
+        /// <summary>
+        /// The player spaceship sprite.
+        /// </summary>
+        Player,
+
+        /// <summary>
+        /// Diamond bullet sprite. 
+        /// </summary>
+        Bullet,
+
+        /// <summary>
+        /// One of the asteroid sprites.
+        /// </summary>
+        Asteroid1,
+
+        /// <summary>
+        /// Alternative asteroid sprite.
+        /// </summary>
+        Asteroid2,
+
+        /// <summary>
+        /// Alternative asteroid sprite.
+        /// </summary>
+        Asteroid3,
+
+        /// <summary>
+        /// Test entity texture.
+        /// </summary>
+        Test
+    }
+
     #endregion
 
     /// <summary>
@@ -53,6 +95,7 @@ namespace Asteroids.Tools
     /// </summary>
     public class GlobalManager
     {
+
         #region Fields. // Contains private fields for all useable textures, all useable fonts, and global control scheme.
 
         /// <summary>
@@ -69,6 +112,11 @@ namespace Asteroids.Tools
         /// A global control scheme that listens for general keystrokes that are consistently read throughout the entire program.
         /// </summary>
         private static ControlScheme keyListener; // ControlScheme objects can be used globally or attached to object instances! This is a great way to process keys because we can simply add the key reactions we want, instead of having to code the entire response chain for each key, everytime.
+
+        /// <summary>
+        /// Scale of the entities and buttons to be drawn.
+        /// </summary>
+        private static float scale; 
 
         #endregion
 
@@ -222,6 +270,7 @@ namespace Asteroids.Tools
             InputManager.Initialize();
             
             keyListener = new ControlScheme();
+            scale = 1.0f;
 
             _initialized = true;
         }
@@ -556,10 +605,38 @@ namespace Asteroids.Tools
         /// <summary>
         /// Empty method for just applying changes. Calls UpdateScreen(w, h) using its current width and height values, anyway.
         /// </summary>
-        public void UpdateScreen()
+        public static void UpdateScreen()
         {
             UpdateScreen(Graphics.PreferredBackBufferWidth,
                 Graphics.PreferredBackBufferHeight);
+        }
+
+        /// <summary>
+        /// Draw a message to the screen.
+        /// </summary>
+        /// <param name="x">X-coordinate.</param>
+        /// <param name="y">Y-coordinate.</param>
+        /// <param name="s">String to print.</param>
+        /// <param name="alignment">Alignment to print the message to.</param>
+        public static void DrawMessage(int x, int y, string s, int alignment, Color textColor)
+        {
+            // Print message.
+            Pen.DrawString(x, y, textColor, s, alignment);
+        }
+
+
+        /// <summary>
+        /// Scale to draw entities.
+        /// </summary>
+        /// <param name="scale">Value. 1.0f means original size.</param>
+        public static void SetScale(float _scale = 1.0f)
+        {
+            scale = _scale;
+
+            if (scale != StateManager.Scale)
+            {
+                StateManager.Scale = scale;
+            }
         }
 
         #endregion

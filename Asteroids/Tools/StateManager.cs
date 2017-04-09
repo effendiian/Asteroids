@@ -1,4 +1,11 @@
-﻿using System;
+﻿/// StateManager.cs - Version 3
+/// Author: Ian Effendi
+/// Date: 3.26.2017
+
+#region Using statements.
+
+// System using statements.
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,79 +20,224 @@ using Microsoft.Xna.Framework.Graphics;
 using Asteroids.Entities;
 using Asteroids.Attributes;
 
+#endregion
+
 namespace Asteroids.Tools
 {
-    // Actions.
+
+    #region Enums. // Contains definitions for the Actions and States enums.
+
+    /// <summary>
+    /// Possible actions to associate with a button press.
+    /// </summary>
     public enum Actions
     {
+        /// <summary>
+        /// Start a new game.
+        /// </summary>
         Start,
+
+        /// <summary>
+        /// Quit to windows.
+        /// </summary>
         Quit,
+
+        /// <summary>
+        /// Return to the previous state.
+        /// </summary>
         Back,
+
+        /// <summary>
+        /// Pause the active game.
+        /// </summary>
         Pause,
+
+        /// <summary>
+        /// Resume the active game.
+        /// </summary>
         Resume,
+        
+        /// <summary>
+        /// Display the game's scores.
+        /// </summary>
         Scores,
+
+        /// <summary>
+        /// Show the options menu.
+        /// </summary>
         Options,
+
+        /// <summary>
+        /// Change the dimensions of the screen.
+        /// </summary>
         Dimensions
     }
 
-
+    /// <summary>
+    /// Any of the possible states the game can be in.
+    /// </summary>
     public enum States
     {
+        /// <summary>
+        /// The pause menu.
+        /// </summary>
         Pause,
+
+        /// <summary>
+        /// The options screen.
+        /// </summary>
         Options,
+
+        /// <summary>
+        /// The main menu.
+        /// </summary>
         Main,
+
+        /// <summary>
+        /// The main game.
+        /// </summary>
         Arena,
+
+        /// <summary>
+        /// The gameover and scores screen.
+        /// </summary>
         Gameover,
+
+        /// <summary>
+        /// This state tells the game to quit.
+        /// </summary>
         Quit
     }
 
-    // Objects.
-    public enum TextureIDs
-    {
-        Button,
-        Player,
-        Bullet,
-        Asteroid1,
-        Asteroid2,
-        Asteroid3,
-        Test
-    }
+    #endregion
 
     public class StateManager
     {
-        // States.
+
+        #region Fields. // Private data, lists, and hashtables for tracking the states.
+
+        /// <summary>
+        /// A collection of all the states.
+        /// </summary>
         private static List<State> stateList;
+
+        /// <summary>
+        /// A hashtable of States enum modes and states.
+        /// </summary>
         private static Dictionary<States, State> states;
-        private static Dictionary<States, List<Entity>> stateEntities;
-        private static Dictionary<States, List<Button>> stateButtons;
+
+        /// <summary>
+        /// Tracks a list of messages as posted by the states to queue for the Message class.
+        /// </summary>
         private static List<Message> messages;
 
-        
-        private static States currState;
-        private static States prevState;
+        /// <summary>
+        /// The game's current scale at which entities are drawn.
+        /// </summary>
+        private static float scale;
 
-        //
+        // State tracking
 
-        // Methods.        
-        // Initialize the state manager.
+        /// <summary>
+        /// The current state's state enum value.
+        /// </summary>
+        private static States currentState;
+
+        /// <summary>
+        /// The previous state's state enum value.
+        /// </summary>
+        private static States previousState;
+
+        #endregion
+
+        #region Flags. // Flags are fields that indicate boolean off/on states for certain class traits.
+
+        /// <summary>
+        /// Determines if the class has been initialized or not.
+        /// </summary>
+        private static bool _initialized = false;
+
+        #endregion
+
+        #region Properties. // The properties provide access to the scale of the states.
+
+        /// <summary>
+        /// The scale of the game.
+        /// </summary>
+        public static float Scale
+        {
+            get { return scale; }
+            set { SetScale(value); }
+        }
+
+        /// <summary>
+        /// Returns the initialization status.
+        /// </summary>
+        public static bool Initialized
+        {
+            get { return _initialized; }
+            private set { _initialized = value; }
+        }
+
+        #endregion
+
+        #region Methods. // The methods to run for the state manager.
+
+        #region Initialization. // Initialize the values inside of the state manager.
+
+        /// <summary>
+        /// Initializes and instantiates some of the static fields in the state manager.
+        /// </summary>
         public static void Initialize()
         {
             // Create the basic states.
             stateList = new List<State>();
             states = new Dictionary<States, State>();
-            stateButtons = new Dictionary<States, List<Button>>();
-            stateEntities = new Dictionary<States, List<Entity>>();
             messages = new List<Message>();
 
             // Set the initial state to the main state.
-            currState = States.Main;
-            prevState = currState;
+            currentState = States.Main;
+            previousState = currentState;
+
+            // Set initialization status to true.
+            _initialized = true;
         }
+
+        #endregion
+
+        #region Service methods. // Methods that add functionality to the class or affect member variables.
+
+        /// <summary>
+        /// Sets the scale of all of the states.
+        /// </summary>
+        /// <param name="_scale">The scale to be set to.</param>
+        public static void SetScale(float _scale = 1.0f)
+        {
+            scale = _scale;
+
+            foreach (State s in stateList)
+            {
+                s.SetScale(_scale);
+            }
+        }
+
+
+
+        #endregion
+
+
+        #endregion
+
+
+
+
+        // Methods.        
+        // Initialize the state manager.
 
         public static void HandleInput(State cState)
         {
             // Handle input.
-            switch (currState)
+            switch (currentState)
             {
                 case States.Main:
                     // Main update code.
@@ -105,7 +257,7 @@ namespace Asteroids.Tools
                 case States.Arena:
                 case States.Pause:
                     // During the main game.
-                    if (currState == States.Pause)
+                    if (currentState == States.Pause)
                     {
                         // What to do during the pause functionality.
                         if (InputManager.IsKeyReleased(Keys.P))
@@ -147,7 +299,7 @@ namespace Asteroids.Tools
         public static void HandleGUIInput(State cState)
         {
             // Handle GUI input.
-            switch (currState)
+            switch (currentState)
             {
                 case States.Main:
                     // Deal with the state switcher.
@@ -184,7 +336,7 @@ namespace Asteroids.Tools
                 case States.Arena:
                 case States.Pause:
                     // During the main game.
-                    if (currState == States.Pause)
+                    if (currentState == States.Pause)
                     {
                         // What to do during the pause functionality.                   
                         // Handle the input.
@@ -221,18 +373,18 @@ namespace Asteroids.Tools
 
         public static void Update(GameTime gameTime)
         {
-            if (prevState != currState)
+            if (previousState != currentState)
             {
                 // Disable the previous state.
-                states[prevState].Disable();
+                states[previousState].Disable();
             }
 
-            State cState = states[currState];
+            State cState = states[currentState];
             cState.Enable();
             cState.Update(gameTime);
             HandleInput(cState);
 
-            switch (currState)
+            switch (currentState)
             {
                 case States.Main:
                     break;
@@ -240,13 +392,13 @@ namespace Asteroids.Tools
                     break;
                 case States.Arena:
                 case States.Pause:
-                    if (currState == States.Pause)
+                    if (currentState == States.Pause)
                     {
 
                     }
                     else
                     {
-                        State current = states[currState];
+                        State current = states[currentState];
 
                         if (current.Exists(EntityType.Test))
                         {
@@ -309,14 +461,14 @@ namespace Asteroids.Tools
 
         public static void UpdateGUI(GameTime gameTime)
         {
-            if (prevState != currState)
+            if (previousState != currentState)
             {
                 // Disable the previous state's buttons.
-                states[prevState].DisableGUI();
+                states[previousState].DisableGUI();
             }
 
             // Enable the buttons.
-            State cState = states[currState];
+            State cState = states[currentState];
             cState.EnableGUI();
             cState.UpdateGUI(gameTime);
             HandleGUIInput(cState);
@@ -330,7 +482,7 @@ namespace Asteroids.Tools
             Vector2 position;
             Color color = cState.DrawColor;
 
-            switch (currState)
+            switch (currentState)
             {
                 case States.Main:
                     break;
@@ -356,7 +508,7 @@ namespace Asteroids.Tools
                 case States.Arena:
                 case States.Pause:
 
-                    if (currState == States.Pause)
+                    if (currentState == States.Pause)
                     {
                         // What to do during the pause functionality.  
                         // Print message: Escape to quit. P to resume the game.
@@ -387,10 +539,10 @@ namespace Asteroids.Tools
 
         public static void Draw()
         {
-            State current = states[currState];
+            State current = states[currentState];
             current.Draw(); 
 
-            switch (currState)
+            switch (currentState)
             {
                 case States.Main:
                     break;
@@ -398,7 +550,7 @@ namespace Asteroids.Tools
                     break;
                 case States.Arena:
                 case States.Pause:
-                    if (currState == States.Pause)
+                    if (currentState == States.Pause)
                     {
 
                     }
@@ -414,7 +566,7 @@ namespace Asteroids.Tools
 
         public static void DrawGUI(ShapeDrawer pen)
         {
-            State cState = states[currState];
+            State cState = states[currentState];
             cState.DrawGUI(); // Main draw code.
             
             Vector2 center = Game1.ScreenCenter;
@@ -431,7 +583,7 @@ namespace Asteroids.Tools
             // Draw the title of the game at the top of the screen.
             pen.DrawRectOutline((int)center.X - (int)((strWidth + offset.X) / 2), strHeight, strWidth + (int)offset.X, strHeight + (int)offset.Y, cState.DrawColor); // Outlines "Asteroids, the Game!".
 
-            switch (currState)
+            switch (currentState)
             {
                 case States.Main:
 
@@ -473,7 +625,7 @@ namespace Asteroids.Tools
         {
             get
             {
-                return states[currState].DrawColor;
+                return states[currentState].DrawColor;
             }
         }
 
@@ -481,7 +633,7 @@ namespace Asteroids.Tools
         {
             get
             {
-                return states[currState].BackgroundColor;
+                return states[currentState].BackgroundColor;
             }
         }
 
@@ -615,26 +767,26 @@ namespace Asteroids.Tools
             // When changing states, set the previous state to the current state, 
             // Before setting target.
 
-            prevState = currState;
-            currState = targetState;
+            previousState = currentState;
+            currentState = targetState;
 
-            states[prevState].Disable();
-            states[currState].Enable();
+            states[previousState].Disable();
+            states[currentState].Enable();
         }
 
         public static void RevertState()
         {
             // Revert the states. The current state will be lost.
 
-            states[currState].Disable();
+            states[currentState].Disable();
 
-            currState = prevState;
-            states[currState].Enable();
+            currentState = previousState;
+            states[currentState].Enable();
         }
 
         public static void TogglePause()
         {
-            if (currState != States.Pause)
+            if (currentState != States.Pause)
             {
                 ChangeState(States.Pause);              
             }
@@ -648,25 +800,25 @@ namespace Asteroids.Tools
         {
             ChangeState(States.Arena);
             // Perform reset functions here.
-            states[currState].Reset();
+            states[currentState].Reset();
             // GlobalParticleGenerator.Stop();
         }
 
         public static void EndGame()
         {
             ChangeState(States.Gameover);
-            prevState = States.Main;
+            previousState = States.Main;
         }
 
         public static void Quit()
         {
             ChangeState(States.Quit);
-            prevState = States.Main;
+            previousState = States.Main;
         }
         
         public static States GetState()
         {
-            return currState;
+            return currentState;
         }
 
         private static void ChangeDimensions()
@@ -674,7 +826,7 @@ namespace Asteroids.Tools
             int height = 600;
             int width = 800;
 
-            switch (Game1.GraphicsDM.PreferredBackBufferWidth)
+            switch (GlobalManager.Graphics.PreferredBackBufferWidth)
             {
                 case 1920:
                     height = 600;
@@ -691,16 +843,10 @@ namespace Asteroids.Tools
                     break;
             }
 
-            float scale = 1.0f * (width / 800);
+            float _scale = 1.0f * (width / 800);
 
-            // GlobalParticleGenerator.SetScale(scale);
-
-            foreach (State state in stateList)
-            {
-                state.SetScale(scale);
-            }
-
-            Game1.UpdateScreenDimensions(width, height);
+            GlobalManager.UpdateScreen(width, height);
+            GlobalManager.SetScale(_scale);
         }
         
         public static void AddMessage(string msg, Vector2 pos, Padding pad, Color draw, int order, int alignment)
