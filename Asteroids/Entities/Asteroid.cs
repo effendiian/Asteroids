@@ -70,20 +70,26 @@ namespace Asteroids.Entities
         }
         
         // Constructors.
-        public Asteroid(ShapeDrawer _pen, Texture2D _image, string _tag) : base(_pen, _image, _tag, Color.White, EntityType.Asteroid)
+        public Asteroid(State _state, Texture2D _image, string _tag) 
+			: base(_state, _image, "Asteroid", EntityType.Asteroid)
         {
             // An asteroid without a level should start at the highest level.
             Initialize();
         }
 
-        public Asteroid(ShapeDrawer _pen, Texture2D _image, string _tag,
+        public Asteroid(State _state, Texture2D _image, string _tag,
             Vector2? _pos = null, Vector2? _vel = null, float _radius = 0,
-            int _level = MAX_LEVEL, int _health = MAX_HEALTH, int _value = BASE_VALUE, bool _scrollable = false) : base(_pen, _image, _tag, Color.White, EntityType.Asteroid)
+            int _level = MAX_LEVEL, int _health = MAX_HEALTH, int _value = BASE_VALUE, bool _scrollable = false)
+			: base(_state, _image, "Asteroid", Color.White, null, null, null, _pos, null, null, _vel, 1.0f, false, EntityType.Asteroid)
         {
-            Initialize(_pos, _vel, _radius, _level, _health, _value, _scrollable);
+
+			Initialize(_pos, _vel, _radius, _level, _health, _value, _scrollable);
         }
 
-        public Asteroid(Asteroid parent) : base(parent.pen, parent.image, parent.tag, parent.DrawColor, EntityType.Asteroid)
+        public Asteroid(Asteroid parent) 
+			: base(parent.state, parent.image, parent.tag, parent.Colorset, parent.position,
+				  parent.UnscaledDimensions, parent.Acceleration, parent.Velocity, parent.Mass,
+				  false, EntityType.Asteroid)
         {
             // Use the parent's values to initialize.
             Initialize(parent.position, parent.velocity, parent.Radius, parent.level - 1, parent.health, parent.points, parent.scrollable);
@@ -95,19 +101,17 @@ namespace Asteroids.Entities
 
             // Add to schema.
             // For changing the speed.
-            schema.AssignKey(Commands.Increment, Keys.Add);
-            schema.AssignKey(Commands.Decrement, Keys.Subtract);
+            AssignControl(Commands.Increment, Keys.Add);
+			AssignControl(Commands.Decrement, Keys.Subtract);
 
-            // For changing the health.
-            schema.AssignKey(Commands.Hurt, Keys.T);
-            schema.AssignKey(Commands.Heal, Keys.Y);
+			// For changing the health.
+			AssignControl(Commands.Hurt, Keys.T);
+			AssignControl(Commands.Heal, Keys.Y);
 
         }
         
         protected override void HandleInput()
         {
-            base.HandleInput();
-
             if (InputManager.IsKeyReleased(schema, Commands.Hurt))
             {
                 Hurt();
@@ -193,7 +197,7 @@ namespace Asteroids.Entities
                 // If not scrollable, spawn in a new position.
 
                 // Set up values.
-                Vector2 screen = Game1.ScreenBounds;
+                Vector2 screen = GlobalManager.ScreenBounds;
                 float screenWidth = screen.X;
                 float screenHeight = screen.Y;
 
@@ -261,19 +265,19 @@ namespace Asteroids.Entities
             }
         }
 
-        public override void DrawGUI()
+        protected override void DrawHUD()
         {
             if (!dead)
             {
                 base.DrawGUI();
 
-                Padding padding = new Padding(0, Game1.Small.MeasureString("A").Y);
+                Padding padding = new Padding(0, GlobalManager.Small.MeasureString("A").Y);
                 Vector2 pos = this.position + new Vector2(0, this.dimensions.Y / 2); // + new Vector2(0, padding.Y); //  new Vector2(0, this.dimensions.Y) 
 
                 int a = ShapeDrawer.CENTER_ALIGN;
 
-                Message.DrawMessage(new Message("Level: " + level, pos, padding, drawColor, 0, a), Game1.Small);
-                Message.DrawMessage(new Message("Health: " + currentHealth + " / " + health + " hp.", pos, padding, drawColor, 1, a), Game1.Small);
+                Message.DrawMessage(new Message("Level: " + level, pos, padding, drawColor, 0, a), GlobalManager.Small);
+                Message.DrawMessage(new Message("Health: " + currentHealth + " / " + health + " hp.", pos, padding, drawColor, 1, a), GlobalManager.Small);
 
                 pos = this.position - new Vector2(this.dimensions.X / 2, this.dimensions.Y / 2) - new Vector2(0, padding.Y * 2);
 
@@ -283,8 +287,8 @@ namespace Asteroids.Entities
                 
                 float width = portion * this.dimensions.X;
 
-                pen.DrawRectOutline((int)pos.X, (int)pos.Y, (int)this.dimensions.X, (int)padding.Y, Color.Red);
-                pen.DrawRectFilled((int)pos.X, (int)pos.Y, (int)width, (int)padding.Y, Color.Red);
+				GlobalManager.Pen.DrawRectOutline((int)pos.X, (int)pos.Y, (int)this.dimensions.X, (int)padding.Y, Color.Red);
+				GlobalManager.Pen.DrawRectFilled((int)pos.X, (int)pos.Y, (int)width, (int)padding.Y, Color.Red);
             }
         }
 
@@ -294,7 +298,7 @@ namespace Asteroids.Entities
             this.currentHealth = health;
 
             Random r = InputManager.RNG;
-            Vector2 pos = Game1.ScreenCenter;
+            Vector2 pos = GlobalManager.ScreenCenter;
 
             if (IsEmpty(_pos))
             {
@@ -304,8 +308,8 @@ namespace Asteroids.Entities
                 // Get the width and height.
                 int width = (int)this.Dimensions.X;
                 int height = (int)this.Dimensions.Y;
-                int screenWidth = (int)Game1.ScreenBounds.X;
-                int screenHeight = (int)Game1.ScreenBounds.Y;
+                int screenWidth = (int)GlobalManager.ScreenBounds.X;
+                int screenHeight = (int)GlobalManager.ScreenBounds.Y;
 
                 Rectangle left = new Rectangle(0, 0, width, screenHeight);
                 Rectangle top = new Rectangle(0, 0, screenWidth, height);
@@ -373,8 +377,8 @@ namespace Asteroids.Entities
             Vector2 dir;
 
             Random r = InputManager.RNG;
-            float x = r.Next(0, (int)Game1.ScreenBounds.X);
-            float y = r.Next(0, (int)Game1.ScreenBounds.Y);
+            float x = r.Next(0, (int)GlobalManager.ScreenBounds.X);
+            float y = r.Next(0, (int)GlobalManager.ScreenBounds.Y);
             
             if (IsEmpty(_vel))
             {

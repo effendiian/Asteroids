@@ -21,12 +21,27 @@ namespace Asteroids.Entities
             set;
         }
 
-        public TestMover(ShapeDrawer _pen, Mover _m) : base(_pen, _m.Image, "!Test", _m.DrawColor, _m.Position, _m.Dimensions, _m.Mass, EntityType.Test)
+        public TestMover(State _state, Mover _m) 
+			:base(_state, _m.Image, _m.Tag, _m.Colorset, _m.Position, _m.UnscaledDimensions, _m.Mass, EntityType.Test)
         {
             this.position = _m.Position;
         }
+		
+		public TestMover(State _state, Texture2D _image, Color? draw = null, Color? hover = null, Color? collide = null, Color? disable = null, Vector2? _pos = null, Vector2? _size = null, float _mass = 1.0f)
+			: base(_state, _image, "!Test", draw, hover, collide, disable, _pos, _size, null, null, _mass, true, EntityType.Test)
+		{
+			if (_pos == null)
+			{
+				Randomize();
+			}
+			else
+			{
+				this.position = Clamp((Vector2)_pos, GetSafeArea());
+			}
+		}
 
-        public TestMover(ShapeDrawer _pen, Texture2D _image, Color _col, Vector2? _pos = null, Vector2? _size = null, float _mass = 1.0f) : base(_pen, _image, "!Test", _col, _pos, _size, _mass, EntityType.Test)
+		public TestMover(State _state, Texture2D _image, ColorSet _col, Vector2? _pos = null, Vector2? _size = null, float _mass = 1.0f)
+			:base(_state, _image, "!Test", _col, _pos, _size, _mass, EntityType.Test)
         {
             if (_pos == null)
             {
@@ -34,11 +49,12 @@ namespace Asteroids.Entities
             }
             else
             {
-                this.position = (Vector2)_pos;
-            }
+                this.position = Clamp((Vector2)_pos, GetSafeArea());
+			}
         }
 
-        public TestMover(ShapeDrawer _pen, Texture2D _image) : base(_pen, _image, "!Test", Color.LimeGreen, null, null, EntityType.Test)
+        public TestMover(State _state, Texture2D _image) 
+			:base(_state, _image, "!Test", Color.LimeGreen, null, null, null, null, null, EntityType.Test)
         {
             this.Randomize();
         }
@@ -47,8 +63,8 @@ namespace Asteroids.Entities
         {
             base.Initialize(_acc, _vel, _mass, _friction);
 
-            exAcc = new Extents(-8f, 8f, 0.0f, 0.04f, 0.07f);
-            exSpeed = new Extents(-1000.0f, 1000.0f, 0.0f, 0.31f, 3f);
+			exAcc = new Extents(8f, 0.07f, false, 0.04f);
+            exSpeed = new Extents(1000.0f, 3f, false, 0.31f);
             gears = new Gears(10, 0, 1000f);
         }
 
@@ -58,39 +74,39 @@ namespace Asteroids.Entities
 
                 // Add to schema.
                 // Forward
-                schema.AssignKey(Commands.Forward, Keys.Up);
-                schema.AssignKey(Commands.Forward, Keys.W);
+                AssignControl(Commands.Forward, Keys.Up);
+                AssignControl(Commands.Forward, Keys.W);
 
                 // Debug.
-                schema.AssignKey(Commands.Debug, Keys.I);
+                AssignControl(Commands.Debug, Keys.I);
 
                 // Toggle friction mode.
-                schema.AssignKey(Commands.FrictionMode, Keys.F);
+                AssignControl(Commands.FrictionMode, Keys.F);
 
                 // Randomize
-                schema.AssignKey(Commands.Randomize, Keys.R);
+               AssignControl(Commands.Randomize, Keys.R);
 
                 // Brake.
-                schema.AssignKey(Commands.Brake, Keys.Down);
-                schema.AssignKey(Commands.Brake, Keys.S);
+                AssignControl(Commands.Brake, Keys.Down);
+                AssignControl(Commands.Brake, Keys.S);
 
                 // Turn Left.
-                schema.AssignKey(Commands.RotateLeft, Keys.A);
+                AssignControl(Commands.RotateLeft, Keys.A);
 
                 // Turn Right.
-                schema.AssignKey(Commands.RotateRight, Keys.D);
+                AssignControl(Commands.RotateRight, Keys.D);
 
                 // Rotate Left.
-                schema.AssignKey(Commands.TurnLeft, Keys.Left);
+                AssignControl(Commands.TurnLeft, Keys.Left);
 
                 // Rotate Right.
-                schema.AssignKey(Commands.TurnRight, Keys.Right);
+                AssignControl(Commands.TurnRight, Keys.Right);
             
         }
 
-        public override void DrawGUI()
+        protected override void DrawHUD()
         {
-            base.DrawGUI();
+            base.DrawHUD();
             
             // Rotation.
             Vector2 rotationLine = new Vector2(-this.direction.Y, this.direction.X);
@@ -100,14 +116,14 @@ namespace Asteroids.Entities
             {
                 DebugLine.DrawLines();
                 Vector2 position = new Vector2(10, 10);
-                Padding padding = new Padding(0, pen.StringHeight("A"));
+                Padding padding = new Padding(0, GlobalManager.Pen.StringHeight("A"));
 
                 //StateManager.AddMessage("Object: [\"" + Tag + "\"]", position, padding, drawColor, 0, ShapeDrawer.LEFT_ALIGN);
                 //StateManager.AddMessage("[\"" + Tag + "\"] Position: " + new Point((int)(Position.X), (int)(Position.Y)) + "", position, padding, drawColor, 0, ShapeDrawer.LEFT_ALIGN);
-                StateManager.AddMessage("[\"" + Tag + "\"] Speed: [" + (int)Speed + " pixels/second]", position, padding, drawColor, 0, ShapeDrawer.LEFT_ALIGN);
-                StateManager.AddMessage("[\"" + Tag + "\"] Velocity: " + new Point((int)(Velocity.X), (int)(Velocity.Y)) + "", position, padding, drawColor, 0, ShapeDrawer.LEFT_ALIGN);
-                StateManager.AddMessage("[\"" + Tag + "\"] Acceleration: " + new Point((int)(accelerationTrack.X), (int)(accelerationTrack.Y)) + " pixels/second^2", position, padding, drawColor, 0, ShapeDrawer.LEFT_ALIGN);
-                StateManager.AddMessage("[\"" + Tag + "\"] Angular Speed: [" + (int)MathHelper.ToDegrees(AngularSpeed) + " degrees/second] | [" + (int)AngularSpeed + " radians/second]", position, padding, drawColor, 0, ShapeDrawer.LEFT_ALIGN);
+                StateManager.AddMessage(new Message("[\"" + Tag + "\"] Speed: [" + (int)Speed + " pixels/second]", position, padding, drawColor, 0, ShapeDrawer.LEFT_ALIGN),
+						new Message("[\"" + Tag + "\"] Velocity: " + new Point((int)(Velocity.X), (int)(Velocity.Y)) + "", position, padding, drawColor, 0, ShapeDrawer.LEFT_ALIGN),
+						new Message("[\"" + Tag + "\"] Acceleration: " + new Point((int)(accelerationTrack.X), (int)(accelerationTrack.Y)) + " pixels/second^2", position, padding, drawColor, 0, ShapeDrawer.LEFT_ALIGN),
+						new Message("[\"" + Tag + "\"] Angular Speed: [" + (int)MathHelper.ToDegrees(AngularSpeed) + " degrees/second] | [" + (int)AngularSpeed + " radians/second]", position, padding, drawColor, 0, ShapeDrawer.LEFT_ALIGN));
             }
 
             // Reset the acceleration magnitude tracking value.
@@ -217,9 +233,9 @@ namespace Asteroids.Entities
         public void Randomize()
         {
             // Randomizes position, and adds a random initial acceleration.
-            Vector2 screen = Game1.ScreenBounds;
+            Vector2 screen = GlobalManager.ScreenBounds;
             screen = new Vector2(screen.X - 25, screen.Y - 25);
-            Random rng = Game1.Random;
+            Random rng = InputManager.RNG;
 
             int maxX = (int)(screen.X - dimensions.X) + 1;
             int maxY = (int)(screen.Y - dimensions.Y) + 1;
@@ -237,12 +253,12 @@ namespace Asteroids.Entities
 
             this.position = new Vector2(x, y);
 
-            float u = rng.Next(0, exAcc.MaxInt);
-            float v = rng.Next(0, exAcc.MaxInt);
+            float u = rng.Next(0, (int)exAcc.Maximum);
+            float v = rng.Next(0, (int)exAcc.Maximum);
             Vector2 randomForce = new Vector2(signU * u, signV * v);
             exAngSpeed.Value += (signU * exAngSpeed.Metric * u) / (1.5f * Mass);
 
-            float mag = rng.Next(0, exSpeed.MaxInt);
+            float mag = rng.Next(0, (int)exSpeed.Maximum);
             randomForce.Normalize();
             randomForce *= mag;
 

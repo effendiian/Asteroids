@@ -240,10 +240,19 @@ namespace Asteroids.Attributes
             this.value = MathHelper.Clamp(this.value, Minimum, Maximum);
         }
 
-        /// <summary>
-        /// Increases <see cref="value"/> by <see cref="increment"/> and then clamps it between the <see cref="Minimum"/> and <see cref="Maximum"/> values.
-        /// </summary>
-        public void Increment()
+		/// <summary>
+		/// Clamps <see cref="val"/> between <see cref="Maximum"/> and <see cref="Minimum"/>.
+		/// </summary>
+		/// <param name="val">Value being clamped.</param>
+		public float Clamp(float val)
+		{
+			return MathHelper.Clamp(val, Minimum, Maximum);
+		}
+
+		/// <summary>
+		/// Increases <see cref="value"/> by <see cref="increment"/> and then clamps it between the <see cref="Minimum"/> and <see cref="Maximum"/> values.
+		/// </summary>
+		public void Increment()
         {
             Increment(increment);
         }

@@ -869,7 +869,7 @@ namespace Asteroids.Tools
         /// <param name="s">Scale to be set to.</param>
         public void SetScale(float s = 1.0f)
         {
-            this.Scale = s;
+            this.scale = s;
 
             foreach (Entity e in GetEntities())
             {

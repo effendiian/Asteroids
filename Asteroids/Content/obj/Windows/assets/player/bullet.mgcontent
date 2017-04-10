@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <SourceFile>C:/Users/effen/Documents/Github/Repos/C#/Asteroids/Asteroids/Content/assets/player/bullet.png</SourceFile>
-  <SourceTime>2016-05-25T12:27:46-04:00</SourceTime>
-  <DestFile>C:/Users/effen/Documents/Github/Repos/C#/Asteroids/Asteroids/Content/bin/Windows/assets/player/bullet.xnb</DestFile>
-  <DestTime>2017-04-06T12:52:36.3154579-04:00</DestTime>
+  <SourceFile>C:/Users/effen/OneDrive/Documents/GitHub/Asteroids/Asteroids/Content/assets/player/bullet.png</SourceFile>
+  <SourceTime>2017-04-08T10:57:15.5077191-04:00</SourceTime>
+  <DestFile>C:/Users/effen/OneDrive/Documents/GitHub/Asteroids/Asteroids/Content/bin/Windows/assets/player/bullet.xnb</DestFile>
+  <DestTime>2017-04-10T11:54:38.7076387-04:00</DestTime>
   <Importer>TextureImporter</Importer>
   <ImporterTime>2016-03-30T02:36:08-04:00</ImporterTime>
   <Processor>TextureProcessor</Processor>

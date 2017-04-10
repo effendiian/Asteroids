@@ -33,23 +33,38 @@ namespace Asteroids.Entities
         }
 
         // Constructor.
+		public Particle(State _state, Mover _m, float _lifetime, float _radius = 0, float _speed = 1, bool _spin = true)
+			: base(_state, _m.Image, _m.Tag, _m.Colorset, _m.Position, _m.Dimensions, _m.Mass, EntityType.Particle)
+		{
+			this.Initialize(_lifetime, _radius, _speed, _m.Position, _m.Velocity, _spin);
+		}
 
-        public Particle(ShapeDrawer _pen, Mover _m, float _lifetime, float _radius = 0, float _speed = 1, bool _spin = true) : base(_pen, _m.Image, _m.Tag, _m.DrawColor, _m.Position, _m.Dimensions, _m.Mass, EntityType.Particle)
-        {
-            this.Initialize(_lifetime, _radius, _speed, _m.Position, _m.Velocity, _spin);
-        }
+		public Particle(State _state, Texture2D _image, string _tag, ColorSet _col, Vector2? _pos = null, Vector2? _size = null, Vector2? _vel = null, float _mass = 1.0f, float _radius = 0, float _speed = 1, bool _spin = true)
+			: base(_state, _image, _tag, _col, _pos, _size, null, _vel, _mass, false, EntityType.Particle)
+		{
+			this.Initialize(_radius: _radius, _speed: _speed, _pos: _pos, _vel: _vel, _spin: _spin);
+		}
 
-        public Particle(ShapeDrawer _pen, Texture2D _image, string _tag, Color _col, Vector2? _pos = null, Vector2? _size = null, Vector2? _vel = null, float _mass = 1.0f, float _radius = 0, float _speed = 1, bool _spin = true) : base(_pen, _image, _tag, _col, _pos, _size, _mass, EntityType.Particle)
+		public Particle(State _state, Texture2D _image, string _tag, Color _col, Vector2? _pos = null, Vector2? _size = null, Vector2? _vel = null, float _mass = 1.0f, float _radius = 0, float _speed = 1, bool _spin = true)
+			: base(_state, _image, _tag, _col, null, null, null, _pos, _size, null, _vel, _mass, false, EntityType.Particle)
         {
             this.Initialize(_radius: _radius, _speed: _speed, _pos: _pos, _vel: _vel, _spin: _spin);
         }
 
-        public Particle(ShapeDrawer _pen, Texture2D _image, string _tag, Color _col, Vector2? _pos = null, Vector2? _size = null, Vector2? _vel = null, float _mass = 1.0f, Rectangle? _bounds = null, float _speed = 1, bool _spin = true) : base(_pen, _image, _tag, _col, _pos, _size, _mass, EntityType.Particle)
-        {
+		public Particle(State _state, Texture2D _image, string _tag, ColorSet _col, Vector2? _pos = null, Vector2? _size = null, Vector2? _vel = null, float _mass = 1.0f, Rectangle? _bounds = null, float _speed = 1, bool _spin = true)
+			: base(_state, _image, _tag, _col, _pos, _size, null, _vel, _mass, false, EntityType.Particle)
+		{
+			this.Initialize(_bounds: _bounds, _speed: _speed, _pos: _pos, _vel: _vel, _spin: _spin);
+		}
+
+		public Particle(State _state, Texture2D _image, string _tag, Color _col, Vector2? _pos = null, Vector2? _size = null, Vector2? _vel = null, float _mass = 1.0f, Rectangle? _bounds = null, float _speed = 1, bool _spin = true)
+			: base(_state, _image, _tag, _col, null, null, null, _pos, _size, null, _vel, _mass, false, EntityType.Particle)
+		{
             this.Initialize(_bounds: _bounds, _speed: _speed, _pos: _pos, _vel: _vel, _spin: _spin);
         }
 
-        public Particle(ShapeDrawer _pen, Texture2D _image, string _tag, float _radius = 0, float _speed = 1, bool _spin = true) : base(_pen, _image, _tag, Color.Yellow, null, null, EntityType.Particle)
+        public Particle(State _state, Texture2D _image, string _tag, float _radius = 0, float _speed = 1, bool _spin = true)
+			: base(_state, _image, _tag, Color.Yellow, null, null, null, null, new Vector2(_radius, _radius), null, null, _radius, false, EntityType.Particle)
         {
             this.Initialize(_radius: _radius, _speed: _speed, _pos: null, _vel: null, _spin: _spin);
         }
@@ -95,8 +110,8 @@ namespace Asteroids.Entities
             if (_vel == null || IsEmpty((Vector2)_vel))
             {
                 mag = r.Next((int)(exSpeed.Maximum + 1));
-                float x = InputManager.GetSign() * r.Next(0, (int)Game1.ScreenBounds.X);
-                float y = InputManager.GetSign() * r.Next(0, (int)Game1.ScreenBounds.Y);
+                float x = InputManager.GetSign() * r.Next(0, (int)GlobalManager.ScreenBounds.X);
+                float y = InputManager.GetSign() * r.Next(0, (int)GlobalManager.ScreenBounds.Y);
                 dir = Vector2.Normalize(new Vector2(x, y));
             }
             else
@@ -154,7 +169,7 @@ namespace Asteroids.Entities
             else
             {
                 Random r = InputManager.RNG;
-                Vector2 screen = Game1.ScreenBounds;
+                Vector2 screen = GlobalManager.ScreenBounds;
                 Vector2 pos = (Vector2)_pos;
 
                 // Generate values between r, subtract/add based on random sign, and clamp.
@@ -167,7 +182,7 @@ namespace Asteroids.Entities
 
         public virtual void Spawn(Vector2? _pos = null)
         {
-            Vector2 screen = Game1.ScreenBounds;
+            Vector2 screen = GlobalManager.ScreenBounds;
             float x = 0;
             float y = 0;
 
@@ -204,7 +219,7 @@ namespace Asteroids.Entities
 
                 int signU = InputManager.GetSign();
 
-                float mag = r.Next(0, exAcc.MaxInt);
+                float mag = r.Next(0, (int)exAcc.Maximum);
                 exAngSpeed.Value += (signU * exAngSpeed.Metric * mag) / (1.5f * Mass);
             }
         }
@@ -234,7 +249,7 @@ namespace Asteroids.Entities
 
         }
 
-        public override void DrawGUI()
+        protected override void DrawHUD()
         {
             // Rotation.
             Vector2 rotationLine = new Vector2(-this.direction.Y, this.direction.X);
@@ -245,7 +260,7 @@ namespace Asteroids.Entities
                 DebugLine.DrawLines();
                 Point life = new Point((int)ttl, (int)lifetime);
                 Vector2 position = new Vector2(10, 10);
-                Padding padding = new Padding(0, pen.StringHeight("A"));
+                Padding padding = new Padding(0, GlobalManager.Pen.StringHeight("A"));
 
                 StateManager.AddMessage("Object: [\"" + Tag + "\"]", position, padding, drawColor, 0, ShapeDrawer.LEFT_ALIGN);
                 StateManager.AddMessage("[\"" + Tag + "\"] Position: " + new Point((int)(Position.X), (int)(Position.Y)) + "", position, padding, drawColor, 0, ShapeDrawer.LEFT_ALIGN);
@@ -269,7 +284,7 @@ namespace Asteroids.Entities
             return (this.lifetime > 0) && this.start;
         }
 
-        public virtual void Start()
+        public override void Start()
         {
             this.start = true;
             this.visible = true;
@@ -289,7 +304,6 @@ namespace Asteroids.Entities
             this.start = false;
             this.visible = false;
             this.enabled = false;
-            this.collisionsOn = false;
             this.dead = true;
             this.ttl = 0;
         }
@@ -309,7 +323,7 @@ namespace Asteroids.Entities
             else
             {
                 // Set up values.
-                Vector2 screen = Game1.ScreenBounds;
+                Vector2 screen = GlobalManager.ScreenBounds;
                 float screenWidth = screen.X;
                 float screenHeight = screen.Y;
 

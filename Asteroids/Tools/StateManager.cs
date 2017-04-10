@@ -340,6 +340,10 @@ namespace Asteroids.Tools
 
 			// Get the base button texture and load the buttons for each of the states.
 			LoadButtons(textures[TextureIDs.Button]);
+
+			// Start the first state.
+			states[currentState].Enable();
+			states[currentState].Start();
 		}
 
 		/// <summary>
@@ -590,6 +594,19 @@ namespace Asteroids.Tools
 		{
 			messages.Add(msg);
 		}
+
+		/// <summary>
+		/// Add a series of message objects to the queue sequentially.
+		/// </summary>
+		/// <param name="msgs">Message object array.</param>
+		public static void AddMessage(params Message[] msgs)
+		{
+			foreach (Message m in msgs)
+			{
+				AddMessage(m);
+			}
+		}
+
 
 		#endregion
 

@@ -1,4 +1,11 @@
-﻿using System;
+﻿/// Entity.cs - Version 4
+/// Author: Ian Effendi
+/// Date: 3.12.2017
+
+#region Using statements
+
+// System using statements.
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,203 +20,435 @@ using Microsoft.Xna.Framework.Graphics;
 using Asteroids.Tools;
 using Asteroids.Attributes;
 
+#endregion
+
 namespace Asteroids.Entities
 {
 
-    // EntityType enum: Player, Asteroid, Test, Star, Particle.
+    // EntityType enum: Player, Asteroid, Test, Star, Particle, Generator.
     // CollisionBehavior enum: ColorChange, Die, Hurt, Null.
-    // ScrollBehavior enum: Die, Spawn, Wrap
+    // ScrollBehavior enum: Die, Spawn, Wrap, Bounce, Null.
 
     #region Enums. // EntityType, CollisionBehavior, and ScrollBehavior are located here.
 
-    // Enums for the types of entity.
+    /// <summary>
+	/// EntityType enum describes the type of entities that can be created.
+	/// </summary>
     public enum EntityType
     {
+		/// <summary>
+		/// The player object is controlled by the player.
+		/// </summary>
         Player,
+
+		/// <summary>
+		/// An asteroid a player can destroy.
+		/// </summary>
         Asteroid,
+		
+		/// <summary>
+		/// A test object.
+		/// </summary>
         Test,
+
+		/// <summary>
+		/// A star.
+		/// </summary>
         Star,
-        Particle
+
+		/// <summary>
+		/// A particle.
+		/// </summary>
+        Particle,
+
+		/// <summary>
+		/// A generator entity, that will spawn other entities.
+		/// </summary>
+		Generator
     }
 
-    // Collision behavior.
+    /// <summary>
+	/// CollisionBehavior is an enum tracking the different actions to perform on collision.
+	/// </summary>
     public enum CollisionBehavior
     {
+		/// <summary>
+		/// Change colors on collision.
+		/// </summary>
         ColorChange,
+
+		/// <summary>
+		/// Instantly kill object on collision.
+		/// </summary>
         Die,
+
+		/// <summary>
+		/// Damage object on collision.
+		/// </summary>
         Hurt,
+
+		/// <summary>
+		/// Do nothing on collision.
+		/// </summary>
         Null
     }
 
-    // Scroll behavior for the entity.
+    /// <summary>
+	/// ScrollBehavior determines the type of action to undertake when scrolling.
+	/// </summary>
     public enum ScrollBehavior
     {
+		/// <summary>
+		/// Kill objects that leave the screen.
+		/// </summary>
         Die,
+
+		/// <summary>
+		/// Spawn a new object somewhere on the screen in this object's place.
+		/// </summary>
         Spawn,
-        Wrap
-        // Bounce
+
+		/// <summary>
+		/// Wrap the object's position on-screen.
+		/// </summary>
+        Wrap,
+
+		/// <summary>
+		/// Flip the object's velocity on collision.
+		/// </summary>
+		Bounce,
+
+		/// <summary>
+		/// The 'nothing' behavior. This should do the same thing as dying.
+		/// </summary>
+		Null
     }
 
-    #endregion
-
-    // An entity is any object with a texture,
-    // that has a position on screen, a tint color,
-    // and boundaries that can deal with collision with
-    // other entities.
-    public abstract class Entity
+	#endregion
+	
+	/// <summary>
+	/// An <see cref="Entity"/> is any object with a texture,
+	/// that has a position on screen, a tint color, 
+	/// and boundaries that can deal with collision with other entities.
+	/// </summary>
+	public abstract class Entity
     {
-        #region Fields.
+		#region Fields. // Privately accessed data responsible for interacting with the Entity.
+		
+		#region Entity archival information.
 
-        // Entity archival information.
-        protected string tag; // Name of the entity.
-        protected EntityType type; // The entity type.
+		/// <summary>
+		/// The Entity's tag.
+		/// </summary>
+		protected string tag;
 
-        // Items used for drawing or entity management.
-        protected State state; // The state this entity resides in.
-        protected ShapeDrawer pen;
+		/// <summary>
+		/// The type of Entity.
+		/// </summary>
+		protected EntityType type;
+
+		#endregion
+
+		#region Items used for drawing or entity management.
+
+		/// <summary>
+		/// The state this Entity is located within.
+		/// </summary>
+		protected State state;
+
+		/// <summary>
+		/// The image the entity is drawn with.
+		/// </summary>
         protected Texture2D image;
-        
-        // Items used for tracking location, rotation, and size.
-        protected Vector2 position;
+
+		#endregion
+
+		#region Items used for tracking location, rotation, and size.
+		
+		/// <summary>
+		/// The Entity's on-screen position. (Centered).
+		/// </summary>
+		protected Vector2 position;
+
+		/// <summary>
+		/// The Entity's origin determines where to put the rotational point.
+		/// </summary>
         protected Vector2 origin;
+
+		/// <summary>
+		/// The Entity's dimensions are the <see cref="originalDimensions"/> scaled by the <see cref="scale"/>. 
+		/// </summary>
         protected Vector2 dimensions;
+
+		/// <summary>
+		/// The Entity's original dimensions are the values given before being modified by scale.
+		/// </summary>
         protected Vector2 originalDimensions; // The "1.0" scale base size.
-        protected Vector2 imageDimensions; // The image dimensions. ("The source").
+
+		/// <summary>
+		/// The image dimensions correspond to the size of the <see cref="Texture2D"/> <see cref="image"/> in the Entity.  
+		/// </summary>
+		protected Vector2 imageDimensions; // The image dimensions. ("The source").
+
+		/// <summary>
+		/// Rotation of the entity in radians.
+		/// </summary>
         protected float rotation; // Rotation of the entity.
+
+		/// <summary>
+		/// The scale given to draw an Entity.
+		/// </summary>
         protected float scale = 1.0f; // The scale of an entity.
-        
-        // Items used for tracking the drawn color.
-        protected Color drawColor; // The current color to draw with.
+
+		#endregion
+
+		#region Items used for tracking the drawn color.
+		
+		/// <summary>
+		/// The current color the Entity is being drawn with.
+		/// </summary>
+		protected Color drawColor; // The current color to draw with.
+
+		/// <summary>
+		/// The whole set of colors the Entity can choose from.
+		/// </summary>
         protected ColorSet colorSet; // The set of colors the entity is drawn with.
-        
-        // Collision behaviors with other entities and with the screen.
-        protected ScrollBehavior scrollMode; // What should the entity do when off-screen.
-        protected CollisionBehavior collideMode; // What should the entity do when hit.
 
-        // Dealing with user key input.
-        protected ControlScheme schema; // Control scheme used to affect entities in different ways.
+		#endregion
 
-        #region Flags.
+		#region Collision behaviors with other entities and with the screen.
 
-        protected bool enabled = false; // Enabled/Disabled flag.
-        protected bool visible = false; // Visibility flag.
-        protected bool draggable = false; // Can it be dragged to begin with.
-        protected bool dragged = false; // Is it being dragged?
-        protected bool debug = false; // Debug flag.
-        protected bool drawGUI = false; // Draw GUI flag.
-        protected bool isInProximity = false; // If something is close to this entity, the state will set this value to true.
-        protected bool isColliding = false; // If something is colliding with this entity, the state will set this value to true.
-        
-        #endregion
+		/// <summary>
+		/// List of behaviors to perform when an Entity leaves the screen.
+		/// </summary>
+		protected List<ScrollBehavior> scrollModes; // What should the entity do when off-screen.
 
-        #endregion
+		/// <summary>
+		/// List of behaviors to perform when an Entity has a collision.
+		/// </summary>
+        protected List<CollisionBehavior> collisionModes; // What should the entity do when hit.
 
-        #region Properties.
+		#endregion
 
-        public bool Enabled
+		#region Dealing with control input.
+
+		protected ControlScheme schema; // Control scheme used to affect entities in different ways.
+
+		#endregion
+
+		#endregion
+
+		#region Flags. // Different flags noting the status of the Entity.
+
+		/// <summary>
+		/// Determines if an entity is enabled or disabled.
+		/// </summary>
+		protected bool enabled = false; // Enabled/Disabled flag.
+
+		/// <summary>
+		/// Determines if an entity should be drawn to the screen.
+		/// </summary>
+		protected bool visible = false; // Visibility flag.
+
+		/// <summary>
+		/// Determines if an entity is in debug mode or not.
+		/// </summary>
+		protected bool debug = false; // Debug flag.
+
+		/// <summary>
+		/// Determines if an entity has a GUI/HUD information to draw.
+		/// </summary>
+		protected bool drawGUI = false; // Draw GUI flag.
+
+		/// <summary>
+		/// Determines if an entity is currently in proximity with another entity that has a collision mode other than Null.
+		/// </summary>
+		protected bool isInProximity = false; // If something is close to this entity, the state will set this value to true.
+
+		/// <summary>
+		/// Determines if an entity is currently colliding with another entity that has a collision mode other than Null.
+		/// </summary>
+		protected bool isColliding = false; // If something is colliding with this entity, the state will set this value to true.
+
+		#endregion
+
+		#region Properties. // Publicly accessible data.
+
+		/// <summary>
+		/// Determines if the entity is currently enabled.
+		/// </summary>
+		public bool Enabled
         {
             get { return this.enabled; }
             set { this.enabled = value; }
         }
 
+		/// <summary>
+		/// Determines if the entity is currently disabled.
+		/// </summary>
         public bool Disabled
         {
             get { return !this.enabled; }
             set { this.enabled = !value; }
         }
 
-        public ScrollBehavior ScrollMode
+		/// <summary>
+		/// Returns a list of all of the different behaviors that can be achieved when the entity leaves the screen.
+		/// </summary>
+        public List<ScrollBehavior> ScrollModes
         {
-            get { return this.scrollMode; }
-            set { this.scrollMode = value; }
+            get { return this.scrollModes; }
+            set { this.scrollModes = value; }
         }
 
-        public bool Scrollable
+		/// <summary>
+		/// Flag that determines if this entity can scroll at all.
+		/// </summary>
+        public bool IsScrollable
         {
-            get { return (ScrollMode == ScrollBehavior.Wrap); }
+            get
+			{
+				foreach (ScrollBehavior mode in scrollModes)
+				{
+					// Return true if the scroll behavior is currently set to wrap.
+					if(mode == ScrollBehavior.Wrap) { return true; }
+				}
+
+				return false;
+			}
         }
 
-        public CollisionBehavior CollisionMode
+		/// <summary>
+		/// Returns a list of all of the different behaviors that can be achieved when the entity leaves the screen.
+		/// </summary>
+		public List<CollisionBehavior> CollisionModes
         {
-            get { return this.collideMode; }
-            set { this.collideMode = value; }
+            get { return this.collisionModes; }
+            set { this.collisionModes = value; }
         }
 
-        public bool CollisionsOn
+		/// <summary>
+		/// Flag that determines if this entity can collide with anything at all.
+		/// </summary>
+        public bool IsCollidable
         {
-            get { return (CollisionMode != CollisionBehavior.Null); }
-        }
+			get
+			{
+				foreach (CollisionBehavior mode in collisionModes)
+				{
+					// Return true if the scroll behavior is currently set to wrap.
+					if (mode != CollisionBehavior.Null) { return true; }
+				}
 
+				return false;
+			}
+		}
+
+		/// <summary>
+		/// Handles the visibility of an Entity.
+		/// </summary>
         public bool Visible
         {
             get { return this.visible; }
             set { this.visible = value; }
         }
 
+		/// <summary>
+		/// Set the Debug flag for the entity.
+		/// </summary>
         public bool Debug
         {
             get { return this.debug; }
             set { this.debug = value; }
         }
 
+		/// <summary>
+		/// Returns the type of EntityType given to this Entity.
+		/// </summary>
         public EntityType Type
         {
             get { return this.type; }
-            set { this.type = value; }
+            protected set { this.type = value; }
         }
 
+		/// <summary>
+		/// The tag value of a given entity.
+		/// </summary>
         public string Tag
         {
             get { return this.tag; }
             set { this.tag = value; }
         }
         
+		/// <summary>
+		/// If this has an image, return true.
+		/// </summary>
         public bool HasImage
         {
             get { return (image == null); }
         }
 
+		/// <summary>
+		/// Returns the image file used to draw this texture.
+		/// </summary>
         public Texture2D Image
         {
             get { return this.image; }
             set { this.image = value; }
         }
 
-        // Position.
+        /// <summary>
+		/// The position of the entity.
+		/// </summary>
         public Vector2 Position
         {
             get { return this.position; }
             set { this.position = value; }
         }
 
-        // The x-coordinate.
+        /// <summary>
+		/// The x-coordinate of the value.
+		/// </summary>
         public float X
         {
             get { return this.position.X; }
             set { this.position = new Vector2(value, this.position.Y); }
         }
 
-        // The y-coordinate.
-        public float Y
+		/// <summary>
+		/// The y-coordinate of the value.
+		/// </summary>
+		public float Y
         {
             get { return this.position.Y; }
             set { this.position = new Vector2(this.position.X, value); }
         }
 
-        // Dimensions.
+        /// <summary>
+		/// Dimensions returns the value of the dimensions after scaling.
+		/// </summary>
         public Vector2 Dimensions
         {
             get { return this.dimensions; }
-            set { this.dimensions = value; }
         }
 
-        // Readonly.
+		public Vector2 UnscaledDimensions
+		{
+			get { return this.originalDimensions; }
+			set { this.SetDimensions(value); }
+		}
+
+		/// <summary>
+		///  The center of the entity. (Since it is centered around the politician, this is pointless).
+		/// </summary>
         public virtual Vector2 Center
         {
             get { return this.position; }
         }
 
-        // The radius.
+        /// <summary>
+		/// The radius.
+		/// </summary>
         public float Radius
         {
             // The radius is the largest dimension.
@@ -217,44 +456,64 @@ namespace Asteroids.Entities
             get { return this.dimensions.Length(); }
         }
 
-        // The width.
+        /// <summary>
+		/// The width.
+		/// </summary>
         public float Width
         {
             get { return this.dimensions.X; }
             set { this.dimensions = new Vector2(value, this.dimensions.Y); }
         }
 
-        // The height.
+        /// <summary>
+		/// The height.
+		/// </summary>
         public float Height
         {
             get { return this.dimensions.Y; }
             set { this.dimensions = new Vector2(this.dimensions.X, value); }
         }
-
-        // Rotation of the entity.
-        public float Rotation
+		
+		/// <summary>
+		/// Rotation of the entity.
+		/// </summary>
+		public float Rotation
         {
             get { return this.rotation; }
             set { this.rotation = value; }
         }
-
-        // The boundaries of the entity. Also known as the display rectangle.
-        public Rectangle Bounds
+		
+		/// <summary>
+		/// The boundaries of the entity. Also known as the display rectangle.
+		/// </summary>
+		public Rectangle Bounds
         {
             get { return new Rectangle((int)position.X - (int)(dimensions.X / 2), (int)position.Y - (int)(dimensions.Y / 2), (int)dimensions.X, (int)dimensions.Y); }
         }
-
-        // Source rectangle.
+		
+		/// <summary>
+		/// Rectangle storing the image dimensions.
+		/// </summary>
         public Rectangle Source
         {
             get { return new Rectangle(0, 0, image.Width, image.Height); }
         }
-
-        // Color to draw the entity.
+		
+		/// <summary>
+		/// Color to draw the entity.
+		/// </summary>
         public Color DrawColor
         {
             get { return this.drawColor; }
         }
+
+		/// <summary>
+		/// Returns this entity's color palatte.
+		/// </summary>
+		public ColorSet Colorset
+		{
+			get { return this.colorSet; }
+		}
 
         #endregion
 
@@ -263,53 +522,49 @@ namespace Asteroids.Entities
         /// An entity, at the minimum, needs a state object and a texture to be created.
         public Entity(State _state, Texture2D _image, string _tag = "Entity [Default]",
             Vector2? _pos = null, Vector2? _size = null,
-            float _rotation = 0f, Color? _drawColor = null,
-            Color? _hoverColor = null, Color? _collisionColor = null,
-            Color? _disableColor = null,
-            ScrollBehavior _scroll = ScrollBehavior.Wrap,
+            float _rotation = 0f, ScrollBehavior _scroll = ScrollBehavior.Wrap,
             CollisionBehavior _collision = CollisionBehavior.Null,
             bool _enabled = false, bool _visible = false,
-            bool _draggable = false, bool _drawGUI = false,
-           ControlScheme _schema = null)
+			bool _drawGUI = false, ControlScheme _schema = null,
+			Color? _drawColor = null,
+			Color? _hoverColor = null, Color? _collisionColor = null,
+			Color? _disableColor = null)
         {
-            Initialize(_state, _image, _tag, _pos, _size, _rotation, new ColorSet(_drawColor, _hoverColor, _collisionColor, _disableColor), _scroll, _collision, _enabled, _visible, _draggable, _drawGUI, _schema);
+            Initialize(_state, _image, _tag, _pos, _size, _rotation, new ColorSet(_drawColor, _hoverColor, _collisionColor, _disableColor), _scroll, _collision, _enabled, _visible, _drawGUI, _schema);
         }
 
         public Entity(State _state, Texture2D _image, string _tag = "Entity [Default]",
             Vector2? _pos = null, Vector2? _size = null,
-            float _rotation = 0f, ColorSet _set = null,
-            ScrollBehavior _scroll = ScrollBehavior.Wrap,
+            float _rotation = 0f, ScrollBehavior _scroll = ScrollBehavior.Wrap,
             CollisionBehavior _collision = CollisionBehavior.Null,
             bool _enabled = false, bool _visible = false,
-            bool _draggable = false, bool _drawGUI = false,
-           ControlScheme _schema = null)
+			bool _drawGUI = false, ControlScheme _schema = null,
+			ColorSet _set = null)
         {
-            Initialize(_state, _image, _tag, _pos, _size, _rotation, _set, _scroll, _collision, _enabled, _visible, _draggable, _drawGUI, _schema);
+            Initialize(_state, _image, _tag, _pos, _size, _rotation, _set, _scroll, _collision, _enabled, _visible, _drawGUI, _schema);
         }
         public Entity(State _state, Texture2D _image, string _tag = "Entity [Default]",
             Vector2? _pos = null, float _size = 0.0f,
-            float _rotation = 0f, Color? _drawColor = null,
-            Color? _hoverColor = null, Color? _collisionColor = null,
-            Color? _disableColor = null,
-            ScrollBehavior _scroll = ScrollBehavior.Wrap,
+            float _rotation = 0f, ScrollBehavior _scroll = ScrollBehavior.Wrap,
             CollisionBehavior _collision = CollisionBehavior.Null,
             bool _enabled = false, bool _visible = false,
-            bool _draggable = false, bool _drawGUI = false,
-            ControlScheme _schema = null)
-        {
-            Initialize(_state, _image, _tag, _pos, _size, _rotation, new ColorSet(_drawColor, _hoverColor, _collisionColor, _disableColor), _scroll, _collision, _enabled, _visible, _draggable, _drawGUI, _schema);
+            bool _drawGUI = false, ControlScheme _schema = null, Color? _drawColor = null,
+			Color? _hoverColor = null, Color? _collisionColor = null,
+			Color? _disableColor = null)
+
+		{
+            Initialize(_state, _image, _tag, _pos, _size, _rotation, new ColorSet(_drawColor, _hoverColor, _collisionColor, _disableColor), _scroll, _collision, _enabled, _visible, _drawGUI, _schema);
         }
 
         public Entity(State _state, Texture2D _image, string _tag = "Entity [Default]",
             Vector2? _pos = null, float _size = 0.0f,
-            float _rotation = 0f, ColorSet _set = null,
-            ScrollBehavior _scroll = ScrollBehavior.Wrap,
+            float _rotation = 0f, ScrollBehavior _scroll = ScrollBehavior.Wrap,
             CollisionBehavior _collision = CollisionBehavior.Null,
             bool _enabled = false, bool _visible = false,
-            bool _draggable = false, bool _drawGUI = false,
-            ControlScheme _schema = null)
+            bool _drawGUI = false, ControlScheme _schema = null,
+			ColorSet _set = null)
         {
-            Initialize(_state, _image, _tag, _pos, _size, _rotation, _set, _scroll, _collision, _enabled, _visible, _draggable, _drawGUI, _schema);
+            Initialize(_state, _image, _tag, _pos, _size, _rotation, _set, _scroll, _collision, _enabled, _visible, _drawGUI, _schema);
         }
 
         #endregion
@@ -326,8 +581,7 @@ namespace Asteroids.Entities
             ScrollBehavior _scroll = ScrollBehavior.Wrap,
             CollisionBehavior _collision = CollisionBehavior.Null,
             bool _enabled = false, bool _visible = false,
-            bool _draggable = false, bool _drawGUI = false,
-           ControlScheme _schema = null)
+			bool _drawGUI = false, ControlScheme _schema = null)
         {
             SetState(_state); // Store the current state.
             SetImage(_image); // File the image to draw with.
@@ -335,9 +589,9 @@ namespace Asteroids.Entities
             SetColorSet(_set); // Set the colors we'd like to use.
             SetDimensions(_size); // By default, base the size off of the image's picture.
             SetRotation(_rotation); // By default this will be 0, but, we can customize on creation. Useful for spawning.
-            SetScrollMode(_scroll); // Wrap entity by default.
-            SetCollisionMode(_collision); // Do not collide by default.
-            SetFlags(_enabled, _visible, _draggable, _drawGUI); // Set these flags up by default.
+            SetScrollModes(_scroll); // Wrap entity by default.
+            SetCollisionModes(_collision); // Do not collide by default.
+            SetFlags(_enabled, _visible); // Set these flags up by default.
             CreateControlScheme(_schema);
         }
 
@@ -348,32 +602,29 @@ namespace Asteroids.Entities
            ScrollBehavior _scroll = ScrollBehavior.Wrap,
            CollisionBehavior _collision = CollisionBehavior.Null,
            bool _enabled = false, bool _visible = false,
-           bool _draggable = false, bool _drawGUI = false,
-           ControlScheme _schema = null)
-        {
+			bool _drawGUI = false, ControlScheme _schema = null)
+		{
             SetState(_state); // Store the current state.
             SetImage(_image); // File the image to draw with.
             SetTag(_tag); // Add a tag for the element.
             SetColorSet(_set); // Set the colors we'd like to use.
             SetDimensions(_size); // By default, base the size off of the image's picture.
             SetRotation(_rotation); // By default this will be 0, but, we can customize on creation. Useful for spawning.
-            SetScrollMode(_scroll); // Wrap entity by default.
-            SetCollisionMode(_collision); // Do not collide by default.
-            SetFlags(_enabled, _visible, _draggable, _drawGUI); // Set these flags up by default.
+            SetScrollModes(_scroll); // Wrap entity by default.
+            SetCollisionModes(_collision); // Do not collide by default.
+            SetFlags(_enabled, _visible); // Set these flags up by default.
             CreateControlScheme(_schema);
         }
 
-        protected virtual void SetFlags(bool _enabled = false, bool _visible = false, bool _draggable = false, bool _drawGUI = false)
+        protected virtual void SetFlags(bool _enabled = false, bool _visible = false, bool _drawGUI = false)
         {
             // Set these flags.
             this.enabled = _enabled;
             this.visible = _visible;
-            this.draggable = _draggable;
             this.drawGUI = _drawGUI;
 
             // Initialize these flags.
             this.debug = false;
-            this.dragged = false;
             this.isInProximity = false;
             this.isColliding = false;
         }
@@ -394,18 +645,29 @@ namespace Asteroids.Entities
         
         // This should be where the child classes specify what keys to add.
         protected abstract void SetUpControlScheme();
-
-        // Wrapper function. Add new keys to the schema.
-        protected void AssignControl(Commands command, List<Keys> keys)
+		
+		/// <summary>
+		/// Wrapper function. Bind a new keys to the schema.
+		/// </summary>
+		/// <param name="command">Command to activate on fire status.</param>
+		/// <param name="key">Keys binded to the command.</param>
+		protected void AssignControl(Commands command, List<Keys> keys)
         {
-            this.schema.AssignKeys(command, keys);
+			foreach (Keys key in keys)
+			{
+				this.schema.Bind(command, key, ActionType.Released);
+			}
         }
-
-        // Wrapper function. Add a new key to the schema.
+		
+		/// <summary>
+		/// Wrapper function. Bind a new key to the schema.
+		/// </summary>
+		/// <param name="command">Command to activate on fire status.</param>
+		/// <param name="key">Key binded to the command.</param>
         protected void AssignControl(Commands command, Keys key)
-        {
-            this.schema.AssignKey(command, key);
-        }
+		{
+			this.schema.Bind(command, key, ActionType.Released);
+		}
 
         #endregion
         
@@ -418,7 +680,6 @@ namespace Asteroids.Entities
             this.state = _state;
 
             // Attributes that can be called from the state.
-            this.pen = state.GetPen();
             this.position = state.GetScreenCenter();
             this.scale = state.GetScale();
         }
@@ -494,18 +755,34 @@ namespace Asteroids.Entities
             this.rotation = MathHelper.WrapAngle(angle); // Wrap the input float value to the rotation.
         }
 
-        // Set the scroll mode.
-        public void SetScrollMode(ScrollBehavior _scroll)
+		/// <summary>
+		/// Set the scroll mode.
+		/// </summary>
+		/// <param name="_scroll">List of behaviors.</param>
+		public void SetScrollModes(params ScrollBehavior[] _scroll)
         {
-            this.scrollMode = _scroll;
-        }
+			foreach (ScrollBehavior scroll in _scroll)
+			{
+				AddScrollBehavior(scroll);
+			}
+		}
+		
+		/// <summary>
+		/// Set the collision mode.
+		/// </summary>
+		/// <param name="_collide">List of behaviors.</param>
+		public void SetCollisionModes(params CollisionBehavior[] _collide)
+		{
+			foreach (CollisionBehavior collide in _collide)
+			{
+				AddCollisionBehavior(collide);
+			}
+		}
 
-        // Set the collision mode.
-        public void SetCollisionMode(CollisionBehavior _collide)
-        {
-            this.collideMode = _collide;
-        }
-
+		/// <summary>
+		/// Set the entity's position, clamping it to the screen.
+		/// </summary>
+		/// <param name="_pos">Position to set to.</param>
         public void SetPosition(Vector2 _pos)
         {
             // Create a rectangle for keeping the entity within the screen's boundaries.
@@ -516,22 +793,26 @@ namespace Asteroids.Entities
 
         #region Service Methods. // Assorted tools and methods.
 
+		/// <summary>
+		/// Clamp the input value to a very small float, since Zero cannot be handled by Vector2 objects.
+		/// </summary>
+		/// <param name="value">Value to clamp.</param>
+		/// <returns>Returns validated value.</returns>
         public float ClampZero(float value)
         {
             if(value == 0.0f) { return 0.000000001f; }
             else { return value; }
         }
 
+		/// <summary>
+		/// Generate a new direction.
+		/// </summary>
+		/// <returns></returns>
         public Vector2 GenerateDirection()
         {
             Vector2 baseVector = GeneratePosition(); // We can utilize our GeneratePosition() code to our advantage here, giving us a sizeable vector that we can normalize.
             baseVector.Normalize(); // This gives us a direction length.
             return baseVector;
-        }
-
-        public Vector2 GenerateVelocity()
-        {
-            return GenerateVelocity(exSpeed.Minimum, exSpeed.Maximum);
         }
 
         public Vector2 GenerateVelocity(float minSpeed, float maxSpeed)
@@ -693,21 +974,82 @@ namespace Asteroids.Entities
 
         protected bool IsEmpty(Vector2 _vector)
         {
-            return  (((int)_vector.Length() == int.MinValue) || ((int)_vector.X == int.MinValue) || ((int)_vector.Y == int.MinValue) || (float.IsNaN(_vector.Length()) || (float.IsNaN(_vector.X) || float.IsNaN(_vector.Y)) || (_vector.X == 0 && _vector.Y == 0) || (_vector == Vector2.Zero) || (_vector.LengthSquared() == 0) || (_vector.Length() == 0));
+            return  (((int)_vector.Length() == int.MinValue) || ((int)_vector.X == int.MinValue) || ((int)_vector.Y == int.MinValue) || (float.IsNaN(_vector.Length()) || (float.IsNaN(_vector.X) || float.IsNaN(_vector.Y)) || (_vector.X == 0 && _vector.Y == 0) || (_vector == Vector2.Zero) || (_vector.LengthSquared() == 0) || (_vector.Length() == 0)));
         }
 
-        #endregion
+		#endregion
 
-        #region Collision Methods. // These methods deal with the collision and proximity of the entities.
-        
-        // Called on collision with something else.
-        public abstract void HandleCollisions();
+		#region Collision Methods. // These methods deal with the collision and proximity of the entities.
+
+		// Called on collision with something else.
+		public virtual void HandleCollisions()
+		{
+			if (IsCollidable)
+			{
+				foreach (CollisionBehavior behavior in collisionModes)
+				{
+					switch (behavior)
+					{
+						case CollisionBehavior.ColorChange:
+							break;
+						case CollisionBehavior.Die:
+							Kill();
+							break;
+						case CollisionBehavior.Hurt:
+							Hurt();
+							break;
+						case CollisionBehavior.Null:
+							isColliding = false; // This cannot collide.
+							break;
+					}
+				}
+			}
+		}
+
+		/// <summary>
+		/// Add a collision behavior.
+		/// </summary>
+		/// <param name="behavior">Behavior to add.</param>
+		public void AddCollisionBehavior(CollisionBehavior behavior)
+		{
+			if (!HasCollisionBehavior(behavior))
+			{
+				collisionModes.Add(behavior);
+			}
+		}
+
+		/// <summary>
+		/// Determines if this entity has the specified collision behavior.
+		/// </summary>
+		/// <param name="behavior">Behavior to check for.</param>
+		/// <returns>Returns true if behavior is included in collisionModes.</returns>
+		public bool HasCollisionBehavior(CollisionBehavior behavior)
+		{
+			foreach (CollisionBehavior mode in collisionModes)
+			{
+				if (behavior == mode)
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		/// <summary>
+		/// Handle collisions when another entity is involved. This allows the other entity to also handle collisions.
+		/// </summary>
+		/// <param name="e">Entity to check for collisions with.</param>
         public abstract void HandleCollisions(Entity e);
-
-        // Checks to see if it's within the radius of the other entity.
-        public virtual bool Proximity(Entity other)
+		
+		/// <summary>
+		/// Checks to see if this entity is within the radius of the other entity.
+		/// </summary>
+		/// <param name="other">Other entity in proximity.</param>
+		/// <returns>Returns true if in proximity.</returns>
+		public virtual bool Proximity(Entity other)
         {
-            if (Enabled && Visible && CollisionsOn)
+            if (Enabled && Visible && IsCollidable)
             {
                 // Calculate the distance.
                 float distanceSquared = (other.Center - this.Center).LengthSquared();
@@ -715,22 +1057,28 @@ namespace Asteroids.Entities
                 // Calculate the radius.
                 float radiiSquared = (float)Math.Pow((double)other.Radius + this.Radius, (double)2);
 
-                // If the dist between the points is less than the radii, return true. Else, return false.
-                return (distanceSquared < radiiSquared);
+				// If the dist between the points is less than the radii, return true. Else, return false.
+				isInProximity = (distanceSquared < radiiSquared);
+				return isInProximity;
             }
 
             // No collision, return false.
             return false;
         }
-
-        // Collision does a closer check, utilizing both a AABB and a circle collision check.
-        public virtual bool Collision(Entity other)
+		
+		/// <summary>
+		/// Collision does a closer check, utilizing both a AABB and a circle collision check.
+		/// </summary>
+		/// <param name="other">Other entity colliding.</param>
+		/// <returns>Returns true if colliding.</returns>
+		public virtual bool Collision(Entity other)
         {
-            if (Enabled && Visible && CollisionsOn)
+            if (Enabled && Visible && IsCollidable)
             {
                 if (Proximity(other))
                 {
-                    return (this.Bounds.Intersects(other.Bounds));
+                    isColliding = (this.Bounds.Intersects(other.Bounds));
+					return isColliding;
                 }
             }
 
@@ -738,45 +1086,67 @@ namespace Asteroids.Entities
             return false;
         }
 
-        // Mouse cursor.
+        /// <summary>
+		/// Check if the mouse is over an entity.
+		/// </summary>
+		/// <returns>Returns true if mouse is over an entity.</returns>
         protected virtual bool MouseOver()
         {
             // Use the InputManager function.
             return InputManager.MouseCollision(this.Bounds);
         }
-
-        // Is the button being hovered over?
-        public bool OnHover()
+		
+		/// <summary>
+		/// Check if the mouse is hovering over an entity.
+		/// </summary>
+		/// <returns>Returns true if mouse is over an entity.</returns>
+		public bool OnHover()
         {
             return InputManager.OnHover(this.Bounds);
         }
-        // Did the mouse just enter over the button?
-        public bool OnEnter()
+
+		/// <summary>
+		/// Check if the mouse just entered over an entity.
+		/// </summary>
+		/// <returns>Returns true if mouse is over an entity.</returns>
+		public bool OnEnter()
         {
             return InputManager.OnEnter(this.Bounds);
         }
 
-        // Did the mouse just exit from over the button?
-        public bool OnExit()
+		/// <summary>
+		/// Check if the mouse just stopped hovering over an entity.
+		/// </summary>
+		/// <returns>Returns true if mouse is over an entity.</returns>
+		public bool OnExit()
         {
             return InputManager.OnExit(this.Bounds);
         }
 
-        // Is the button just pressed?
-        public bool IsClicked()
+		/// <summary>
+		/// Check if the mouse is over an entity and the left mouse button was pressed.
+		/// </summary>
+		/// <returns>Returns true if mouse is over an entity and button was clicked.</returns>
+		public bool IsClicked()
         {
             // If the mouse is inside the button, and just the left button was just pressed.
             return (MouseOver() && InputManager.LeftButtonPressed);
         }
 
-        // Is the button held?
-        public bool IsHeld()
+		/// <summary>
+		/// Check if the mouse is over an entity and the left mouse button was held.
+		/// </summary>
+		/// <returns>Returns true if mouse is over an entity and button was held.</returns>
+		public bool IsHeld()
         {
             return (MouseOver() && InputManager.LeftButtonHeld);
         }
 
-        // Is the button just released?
-        public bool IsReleased()
+		/// <summary>
+		/// Check if the mouse is over an entity and the left mouse button was released.
+		/// </summary>
+		/// <returns>Returns true if mouse is over an entity and button was released.</returns>
+		public bool IsReleased()
         {
             if (!MouseOver())
             {
@@ -788,37 +1158,51 @@ namespace Asteroids.Entities
             }
         }
 
-        #endregion
+		#endregion
 
-        #region Update Methods. // Update the entity, GUI info, stop the entity, start, reset, or kill.
+		#region Update Methods. // Update the entity, GUI info, stop the entity, start, reset, or kill.
 
-        // Update, stop, start, kill, and reset methods.
+		// Update, stop, start, kill, and reset methods.
+		
+		/// <summary>
+		/// Start the entity. Called when a state is asked to start.
+		/// </summary>
+		public abstract void Start();
+		
+		/// <summary>
+		/// Stop the entity. Called when a state is asked to stop.
+		/// </summary>
+		public abstract void Stop();
+		
+		/// <summary>
+		/// Reset the entity at the start of the game. Called when state needs to reset.
+		/// </summary>
+		public abstract void Reset();
+		
+		/// <summary>
+		/// Kill the entity. Called when Entity needs to be removed from the state.
+		/// </summary>
+		public abstract void Kill();
 
-        // Start the entity. Called when a state is asked to start.
-        public abstract void Start();
+		/// <summary>
+		/// Spawn entity in a new, random place.
+		/// </summary>
+		public abstract void Spawn();
 
-        // Stop the entity. Called when a state is asked to stop.
-        public abstract void Stop();
+		/// <summary>
+		/// Reverse the entity's velocities.
+		/// </summary>
+		public abstract void Bounce();
 
-        // Reset the entity at the start of the game. Called when state needs to reset.
-        public abstract void Reset();
-
-        // Kill the entity. Called when Entity needs to be removed from the state.
-        public abstract void Kill();
-
-        // Update the entity.
-        public virtual void Update(GameTime gameTime)
-        {
-            if (Enabled)
-            {
-                HandleInput();
-                Update((float)gameTime.ElapsedGameTime.TotalSeconds);
-                WrapEdges();
-            }
-        }
-
-        // Wrap the entity's edges if it's off-screen.
-        protected virtual void WrapEdges()
+		/// <summary>
+		/// Harm the entity's health, if possible.
+		/// </summary>
+		public abstract void Hurt();
+		
+		/// <summary>
+		///  Wrap the entity's edges if it's off-screen.
+		/// </summary>
+		protected virtual void WrapEdges()
         {
             // Set up values.
             Vector2 screen = state.GetScreenBounds();
@@ -843,37 +1227,68 @@ namespace Asteroids.Entities
                 float maxY = screenHeight + offsetY;
 
                 if (this.position.X > maxX)
-                {
-                    x = minX;
-                    offScreen = true;
-                }
+				{
+					if (HasScrollBehavior(ScrollBehavior.Null))
+					{
+						x = maxX;
+					}
+					else
+					{
+						x = minX;
+					}
+
+					offScreen = true;
+				}
                 else if (this.position.X < minX)
-                {
-                    x = maxX;
-                    offScreen = true;
-                }
+				{
+					if (HasScrollBehavior(ScrollBehavior.Null))
+					{
+						x = minX;
+					}
+					else
+					{
+						x = maxX;
+					}
+
+					offScreen = true;
+				}
 
                 if (this.position.Y > maxY)
                 {
-                    y = minY;
-                    offScreen = true;
-                }
+					if (HasScrollBehavior(ScrollBehavior.Null))
+					{
+						y = maxY;
+					}
+					else
+					{
+						y = minY;
+					}
+
+					offScreen = true;
+				}
                 else if (this.position.Y < minY)
                 {
-                    y = maxY;
-                    offScreen = true;
-                }
+					if (HasScrollBehavior(ScrollBehavior.Null))
+					{
+						y = minY;
+					}
+					else
+					{
+						y = maxY;
+					}
+
+					offScreen = true;
+				}
 
                 if (offScreen)
                 {
-                    if (Scrollable)
-                    {
-                        this.position = new Vector2(x, y);
-                    }
-                    else
-                    {
-                        HandleScreenWrap();
-                    }
+					if (HasScrollBehavior(ScrollBehavior.Wrap))
+					{
+						this.position = new Vector2(x, y);
+					}
+					
+					// Handle any additional screenwrap behaviors this entity might have.
+					HandleScreenWrap();
                 }
             }
             else
@@ -882,43 +1297,122 @@ namespace Asteroids.Entities
             }
         }
 
-        // Handle any input.
-        protected abstract void HandleInput();
+		/// <summary>
+		/// Add a new behavior onto the entity to check for while scrolling.
+		/// </summary>
+		/// <param name="behavior">Behavior to add.</param>
+		protected void AddScrollBehavior(ScrollBehavior behavior)
+		{
+			if (!scrollModes.Contains(behavior))
+			{
+				scrollModes.Add(behavior);
+			}
+		}
 
-        // This is called by child classes for handling actions on screen wrap when wrapping is not the default action.
-        protected abstract void HandleScreenWrap();
-        
-        // Update with delta.
-        protected abstract void Update(float delta);
+		/// <summary>
+		/// This is called by child classes for handling actions on screen wrap when wrapping is not the default action.
+		/// </summary>
+		protected virtual void HandleScreenWrap()
+		{
+			foreach (ScrollBehavior behavior in scrollModes)
+			{
+				switch (behavior)
+				{
+					case ScrollBehavior.Bounce:
+						Bounce();
+						break;
+					case ScrollBehavior.Die:
+						Kill();
+						break;
+					case ScrollBehavior.Spawn:
+						Spawn();
+						break;
+				}
+			}
+		}
 
-        // Update GUI information from the entity, if any.
-        public virtual void UpdateGUI(GameTime gameTime)
+		/// <summary>
+		/// Determines if this contains a particular behavior.
+		/// </summary>
+		/// <param name="behavior">Behavior to check for.</param>
+		/// <returns>Returns true if it is in the list.</returns>
+		protected bool HasScrollBehavior(ScrollBehavior behavior)
+		{
+			foreach (ScrollBehavior mode in scrollModes)
+			{
+				if (behavior == mode)
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		/// <summary>
+		/// Handle user input.
+		/// </summary>
+		protected abstract void HandleInput();
+
+
+		/// <summary>
+		/// Update the entity.
+		/// </summary>
+		/// <param name="gameTime">Snapshot of elapsed time since last frame.</param>
+		public virtual void Update(GameTime gameTime)
+		{
+			if (Enabled)
+			{
+				HandleInput();
+				Update((float)gameTime.ElapsedGameTime.TotalSeconds);
+				WrapEdges();
+			}
+		}
+
+		/// <summary>
+		/// Update with delta.
+		/// </summary>
+		/// <param name="delta">Total elapsed time since last frame.</param>
+		protected abstract void Update(float delta);
+		
+		/// <summary>
+		/// Update GUI information from the entity, if any.
+		/// </summary>
+		/// <param name="gameTime">Snapshot of elapsed time since last frame.</param>
+		public virtual void UpdateGUI(GameTime gameTime)
         {
             if (Enabled)
             {
                 UpdateGUI((float)gameTime.ElapsedGameTime.TotalSeconds);
             }
         }
-
-        // Update GUI with delta.
-        protected abstract void UpdateGUI(float delta);
+		
+		/// <summary>
+		/// Update GUI with delta.
+		/// </summary>
+		/// <param name="delta">Total elapsed time since last frame.</param>
+		protected abstract void UpdateGUI(float delta);
 
         #endregion
 
         #region Draw Methods. // Draw methods and abstract signatures for child classes to define.
-
-        // Draw the entity to the screen.
+		
+		/// <summary>
+		/// Draw the entity to the screen, if enabled and visible, and then call <see cref="DrawOverlay"/>. 
+		/// </summary>
         public void Draw()
         {
             if (Enabled && Visible)
             {
-                pen.Pen.Draw(image, Bounds, Source, drawColor, rotation, origin, SpriteEffects.None, 0);
+                GlobalManager.Pen.Pen.Draw(image, Bounds, Source, drawColor, rotation, origin, SpriteEffects.None, 0);
                 DrawOverlay();
             }
         }
-
-        // DrawOverlay is called after the entity is drawn, just in case children need to draw anything else.
-        public abstract void DrawOverlay();
+		
+		/// <summary>
+		/// DrawOverlay is called after the entity is drawn, just in case children need to draw anything else.
+		/// </summary>
+		public abstract void DrawOverlay();
 
         // DrawGUI draws any GUI/HUD information necessary.
         public void DrawGUI()
@@ -929,23 +1423,27 @@ namespace Asteroids.Entities
                 DrawDebug(); // This draws only if debug is true.
             }
         }
-
-        // DrawDebug is drawn the entity if debug is true.
-        protected virtual void DrawDebug()
+		
+		/// <summary>
+		/// DrawDebug is drawn the entity if debug is true
+		/// </summary>
+		protected virtual void DrawDebug()
         {
             if (Debug)
             {
                 DebugLine.DrawLines();
                 Vector2 position = new Vector2(10, 10);
-                Padding padding = new Padding(0, pen.StringHeight("A"));
+                Padding padding = new Padding(0, GlobalManager.Pen.StringHeight("A"));
 
-                StateManager.AddMessage("Object: [\"" + Tag + "\"]", position, padding, drawColor, 0, ShapeDrawer.LEFT_ALIGN);
-                StateManager.AddMessage("[\"" + Tag + "\"] Bounds: " + Bounds.ToString(), position, padding, drawColor, 0, ShapeDrawer.LEFT_ALIGN);
-                StateManager.AddMessage("[\"" + Tag + "\"] Position: " + new Point((int)(Position.X), (int)(Position.Y)) + "", position, padding, drawColor, 0, ShapeDrawer.LEFT_ALIGN);
+                StateManager.AddMessage(new Message("Object: [\"" + Tag + "\"]", position, padding, drawColor, 0, ShapeDrawer.LEFT_ALIGN),
+					new Message("[\"" + Tag + "\"] Bounds: " + Bounds.ToString(), position, padding, drawColor, 0, ShapeDrawer.LEFT_ALIGN),
+					new Message("[\"" + Tag + "\"] Position: " + new Point((int)(Position.X), (int)(Position.Y)) + "", position, padding, drawColor, 0, ShapeDrawer.LEFT_ALIGN));
             }
         }
 
-        // DrawHUD is drawn by children classes.
+        /// <summary>
+		/// DrawHUD draws any GUI elements directly attached to the entity, to the screen.
+		/// </summary>
         protected abstract void DrawHUD();
         
         #endregion

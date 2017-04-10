@@ -59,14 +59,14 @@ namespace Asteroids.Tools.States
 			asteroidTextures.Add(textures[TextureIDs.Asteroid2]);
 			asteroidTextures.Add(textures[TextureIDs.Asteroid3]);
 
-			TestMover test = new TestMover(GlobalManager.Pen, textures[TextureIDs.Test], Color.LimeGreen, _size: new Vector2(15, 15));
+			TestMover test = new TestMover(this, textures[TextureIDs.Test], Color.LimeGreen, _size: new Vector2(15, 15));
 			test.PlayerControl = true;
 
 			// TODO: Replace with manager code. Pass in list of asteroid textures.
 
 			// Load the entities.
-			LoadEntities(new Asteroid(GlobalManager.Pen, asteroidTextures[0], "Asteroid"),
-					new TestMover(GlobalManager.Pen, textures[TextureIDs.Test], Color.LimeGreen, _size: new Vector2(15, 15)),
+			LoadEntities(new Asteroid(this, asteroidTextures[0], "Asteroid"),
+					new TestMover(this, textures[TextureIDs.Test], Color.LimeGreen, _size: new Vector2(15, 15)),
 					test);
 		}
 
@@ -76,7 +76,7 @@ namespace Asteroids.Tools.States
 		/// <param name="button">Texture of the button.</param>
 		public override void LoadButtons(Texture2D button, Padding screenPadding, Padding centerPadding, Vector2 bounds)
 		{
-			this.LoadButtons(new Button(Actions.Pause, GlobalManager.Pen, Button.Positions.BottomRight, screenPadding.Get(-1), bounds, button, "Pause"));
+			this.LoadButtons(new Button(Actions.Pause, GlobalManager.Pen, Positions.BottomRight, screenPadding.Get(-1), bounds, button, "Pause"));
 		}
 
 		#endregion

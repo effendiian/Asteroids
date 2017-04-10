@@ -18,32 +18,15 @@ namespace Asteroids.Entities
     public class Mover : Entity
     {
         // Constants.
-        public const int DEFAULT_MAX_SPEED = 1000f;
-        public const int DEFAULT_MAX_ACCEL = 10f;
-
+        public const int DEFAULT_MAX_SPEED = 1000;
+        public const int DEFAULT_MAX_ACCEL = 25;
 
         #region Fields. // Items that are unique to movers deal with motion and tracking it.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+				
         // Fields
-        protected Extents exAcc = new Extents(-25f, 25f, 0.0f, 0.04f, 5f);
-        protected Extents exSpeed = new Extents(-1000.0f, 1000.0f, 0.0f, 0.31f, 3f);
-        protected Extents exAngSpeed = new Extents(-7.0f, 7.0f, 0.0f, 0.05f, 0.2f);
+        protected Extents exAcc = new Extents(DEFAULT_MAX_ACCEL, 5f, false);
+        protected Extents exSpeed = new Extents(DEFAULT_MAX_SPEED, 2f, false, 0.31f);
+        protected Extents exAngSpeed = new Extents(7.0f, 0.2f, false, 0.05f);
 
         protected float mew = 0.01f;
 
@@ -63,10 +46,10 @@ namespace Asteroids.Entities
 
         protected bool friction;
 
-        protected ControlScheme schema;
+		#endregion
 
-        // Properties.
-        public float Mass
+		// Properties.
+		public float Mass
         {
             get { return this.mass; }
         }
@@ -193,41 +176,74 @@ namespace Asteroids.Entities
             {
                 SetExtentsMaximum(exAngSpeed, value);
             }
-        }
+		}
+
+		public Vector2 GenerateVelocity()
+		{
+			return GenerateVelocity(exSpeed.Minimum, exSpeed.Maximum);
+		}
 
 
-        // Constructor
-        public Mover(ShapeDrawer _pen, Texture2D _image, EntityType _type) : base(_pen, "Mover Entity", _image, null, new Vector2(100, 100), Color.White, false, true, true, _type)
+		#region Constructors.
+
+		// Constructor
+		public Mover(State _state, Texture2D _image, EntityType _type) 
+			: base(_state, _image, "Mover", null, new Vector2(100), 0f, ScrollBehavior.Wrap, CollisionBehavior.Null, false, true, false, null, null)
         {
+			this.Type = _type;
             Initialize(null, null);
-        }
+		}
+		public Mover(State _state, Texture2D _image, string _tag, EntityType _type = EntityType.Test)
+			: base(_state, _image, _tag, null, new Vector2(100), 0f, ScrollBehavior.Wrap, CollisionBehavior.Null, false, true, false, null, null)
+		{
+			this.Type = _type;
+			Initialize(null, null);
+		}
+		
+        public Mover(State _state, Texture2D _image, string _tag, ColorSet colorset, Vector2? _pos = null, Vector2? _size = null, EntityType _type = EntityType.Test)
+			: base(_state, _image, _tag, _pos, _size, 0f, ScrollBehavior.Wrap, CollisionBehavior.Null, false, true, false, null, colorset)
+		{
+			this.Type = _type;
+			Initialize(null, null);
+		}
+		public Mover(State _state, Texture2D _image, string _tag, Color? draw = null, Color? hover = null, Color? collision = null, Color? disabled = null, Vector2? _pos = null, Vector2? _size = null, EntityType _type = EntityType.Test)
+			: base(_state, _image, _tag, _pos, _size, 0f, ScrollBehavior.Wrap, CollisionBehavior.Null, false, true, false, null, draw, hover, collision, disabled)
+		{
+			this.Type = _type;
+			Initialize(null, null);
+		}
 
-        public Mover(ShapeDrawer _pen, Texture2D _image, string _tag, EntityType _type = EntityType.Test) : base(_pen, _tag, _image, null, new Vector2(100, 100), Color.White, false, true, true, _type)
-        {
-            Initialize(null, null);
-        }
+		public Mover(State _state, Texture2D _image, string _tag, ColorSet colorset, Vector2? _pos = null, Vector2? _size = null, float _mass = 1.0f, EntityType _type = EntityType.Test)
+			: base(_state, _image, _tag, _pos, _size, 0f, ScrollBehavior.Wrap, CollisionBehavior.Null, false, true, false, null, colorset)
+		{
+			this.Type = _type;
+			Initialize(null, null, _mass);
+		}
 
-        public Mover(ShapeDrawer _pen, Texture2D _image, string _tag, Color color, EntityType _type = EntityType.Test) : base(_pen, _tag, _image, null, new Vector2(100, 100), color, false, true, true, _type)
-        {
-            Initialize(null, null);
-        }
+		public Mover(State _state, Texture2D _image, string _tag, Color? draw = null, Color? hover = null, Color? collision = null, Color? disabled = null, Vector2? _pos = null, Vector2? _size = null, float _mass = 1.0f, EntityType _type = EntityType.Test)
+			: base(_state, _image, _tag, _pos, _size, 0f, ScrollBehavior.Wrap, CollisionBehavior.Null, false, true, false, null, draw, hover, collision, disabled)
+		{
+			this.Type = _type;
+			Initialize(null, null, _mass);
+		}
 
-        public Mover(ShapeDrawer _pen, Texture2D _image, string _tag, Color color, Vector2? _pos = null, Vector2? _size = null, EntityType _type = EntityType.Test) : base(_pen, _tag, _image, _pos, _size, color, false, true, true)
-        {
-            Initialize(null, null);
-        }
+		public Mover(State _state, Texture2D _image, string _tag, ColorSet colorset, Vector2? _pos = null, Vector2? _size = null, Vector2? _acc = null, Vector2? _vel = null, float _mass = 1.0f, bool _friction = true, EntityType _type = EntityType.Test)
+			: base(_state, _image, _tag, _pos, _size, 0f, ScrollBehavior.Wrap, CollisionBehavior.Null, false, true, false, null, colorset)
+		{
+			this.Type = _type;
+			Initialize(_acc, _vel, _mass, _friction);
+		}
 
-        public Mover(ShapeDrawer _pen, Texture2D _image, string _tag, Color color, Vector2? _pos = null, Vector2? _size = null, float _mass = 1.0f, EntityType _type = EntityType.Test) : base(_pen, _tag, _image, _pos, _size, color, false, true, true)
-        {
-            Initialize(null, null, _mass);
-        }
+		public Mover(State _state, Texture2D _image, string _tag, Color? draw = null, Color? hover = null, Color? collision = null, Color? disabled = null, Vector2? _pos = null, Vector2? _size = null, Vector2? _acc = null, Vector2? _vel = null, float _mass = 1.0f, bool _friction = true, EntityType _type = EntityType.Test)
+			: base(_state, _image, _tag, _pos, _size, 0f, ScrollBehavior.Wrap, CollisionBehavior.Null, false, true, false, null, draw, hover, collision, disabled)
+		{
+			this.Type = _type;
+			Initialize(_acc, _vel, _mass, _friction);
+		}
 
-        public Mover(ShapeDrawer _pen, Texture2D _image, string _tag, Color color, Vector2 _pos, Vector2 _size, Vector2? _acc = null, Vector2? _vel = null, float _mass = 1.0f, bool _friction = true, EntityType _type = EntityType.Test) : base(_pen, _tag, _image, _pos, _size, color, false, true, true, _type)
-        {
-            Initialize(_acc, _vel, _mass, _friction);
-        }
+		#endregion
 
-        protected void AddDebugLine(Vector2 vector, Color color, float magnitude = 10.0f, float thickness = 1f, float order = 1f)
+		protected void AddDebugLine(Vector2 vector, Color color, float magnitude = 10.0f, float thickness = 1f, float order = 1f)
         {
             if (Debug)
             {
@@ -267,34 +283,17 @@ namespace Asteroids.Entities
             // Add keys to schema.
         }
         
-
-        // Helper method; determines if vector is empty.
-        protected bool IsEmpty(Vector2 vec)
-        {
-            if (vec == null)
-            {
-                return true;
-            }
-            else if (vec == Vector2.Zero || vec.LengthSquared() == 0 || vec.Length() == 0 || vec.Length() == float.NaN || (int)vec.Length() == int.MinValue || vec.X == float.NaN || vec.Y == float.NaN)
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        // If controlled by the player, input is handled here.
-        protected virtual void HandleInput()
-        {
-            // Input gets handled here if the entity requires it.
-        }
-
         protected virtual void HandleAccelerationBehavior()
         {
             // Any miscellaneous functions that aren't user input.
         }
 
-        protected virtual void HandleRotation()
+		protected override void HandleInput()
+		{
+			// Stub. Overriden by children.
+		}
+
+		protected virtual void HandleRotation()
         {
             // Acceleration affects rotation.
             // float aAcceleration = acceleration.X / (10.0f * Mass);
@@ -308,7 +307,7 @@ namespace Asteroids.Entities
                 exAngSpeed.Value += aFriction;
             }
                         
-            if (exAngSpeed.InCenterRange())
+            if (exAngSpeed.CloseToZero(exAngSpeed.Value))
             {
                 exAngSpeed.Value = 0.0f;
             }
@@ -427,7 +426,7 @@ namespace Asteroids.Entities
             WrapEdges();
         }
 
-        public override void Update(GameTime gameTime)
+		public override void Update(GameTime gameTime)
         {
             if (Enabled)
             {
@@ -559,7 +558,7 @@ namespace Asteroids.Entities
             exAngSpeed.Value += exAngSpeed.Metric;
         }
 
-        public void Stop()
+        public override void Stop()
         {
             acceleration = new Vector2(0, 0);
             velocity = new Vector2(0, 0);
@@ -604,10 +603,10 @@ namespace Asteroids.Entities
             // AddDebugLine(this.direction, Color.Purple, 55f, 4f, 1);
             int thick = (int)MathHelper.Clamp(Speed / 10f, 5, 15);
             Vector2 marker = this.position + (this.direction * (int)MathHelper.Clamp(Speed, this.Radius, this.Radius * 4.0f));
-            pen.DrawRectOutlineAroundPoint((int)marker.X, (int)marker.Y, (int)(thick * scale), Color.Purple);
+            GlobalManager.Pen.DrawRectOutlineAroundPoint((int)marker.X, (int)marker.Y, (int)(thick * scale), Color.Purple);
 
             int mark = (int)MathHelper.Clamp((thick - 2), 3, 14);
-            pen.DrawRectAroundPoint((int)marker.X, (int)marker.Y, (int)(mark * scale), Color.Purple);
+			GlobalManager.Pen.DrawRectAroundPoint((int)marker.X, (int)marker.Y, (int)(mark * scale), Color.Purple);
         }
 
         public float GetExtentsMaximum(Extents e)
@@ -619,7 +618,67 @@ namespace Asteroids.Entities
         {
             float positive = Math.Abs(value);
             float negative = -1 * positive;
-            e = new Extents(negative, positive, e.Value, e.Midpoint, e.Metric);
+            e = new Extents(positive, e.Metric, false, e.Value);
         }
-    }
+
+		protected override void SetUpControlScheme()
+		{
+			// Stub. Overriden by children.
+		}
+
+		public override void HandleCollisions(Entity e)
+		{
+			// Stub. Overriden by children.
+		}
+
+		public override void Start()
+		{
+			// Stub. Overriden by children.
+		}
+
+		public override void Reset()
+		{
+			// Stub. Overriden by children.
+		}
+
+		public override void Kill()
+		{
+			// Stub. Overriden by children.
+		}
+
+		public override void Spawn()
+		{
+			// Stub. Overriden by children.
+		}
+
+		public override void Bounce()
+		{
+			// Stub. Overriden by children.
+		}
+
+		public override void Hurt()
+		{
+			// Stub. Overriden by children.
+		}
+
+		protected override void Update(float delta)
+		{
+			// Stub. Overriden by children.
+		}
+
+		protected override void UpdateGUI(float delta)
+		{
+			// Stub. Overriden by children.
+		}
+
+		public override void DrawOverlay()
+		{
+			// Stub. Overriden by children.
+		}
+
+		protected override void DrawHUD()
+		{
+			// Stub. Overriden by children.
+		}
+	}
 }

@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace Asteroids.Tools
 {
-    public class AsteroidGenerator : Generator
-    {
+	// TODO: Create this class.
+    // public class AsteroidGenerator : Generator
+    // {
 
 
-    }
+    // }
 }

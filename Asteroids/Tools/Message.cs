@@ -166,13 +166,13 @@ namespace Asteroids.Tools
         public void DrawMessage(int order, SpriteFont font)
         {
             // Print message.
-            Game1.Pen.DrawString((int)position.X + (int)padding.GetX(order), (int)position.Y + (int)padding.GetY(order), drawColor, this.message, alignment, font);
+            GlobalManager.Pen.DrawString((int)position.X + (int)padding.GetX(order), (int)position.Y + (int)padding.GetY(order), drawColor, this.message, alignment, font);
         }
 
         public void DrawMessage(int order)
         {
-            // Print message.
-            Game1.Pen.DrawString((int) position.X + (int) padding.GetX(order), (int) position.Y + (int) padding.GetY(order), drawColor, this.message, alignment);
+			// Print message.
+			GlobalManager.Pen.DrawString((int) position.X + (int) padding.GetX(order), (int) position.Y + (int) padding.GetY(order), drawColor, this.message, alignment);
         }
     }
 }

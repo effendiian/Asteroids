@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <SourceFile>C:/Users/effen/Documents/Github/Repos/C#/Asteroids/Asteroids/Content/assets/ui/arena/compass/compass_needle.png</SourceFile>
-  <SourceTime>2017-03-12T00:50:06-05:00</SourceTime>
-  <DestFile>C:/Users/effen/Documents/Github/Repos/C#/Asteroids/Asteroids/Content/bin/Windows/assets/ui/arena/compass/compass_needle.xnb</DestFile>
-  <DestTime>2017-04-06T12:52:36.3435063-04:00</DestTime>
+  <SourceFile>C:/Users/effen/OneDrive/Documents/GitHub/Asteroids/Asteroids/Content/assets/ui/arena/compass/compass_needle.png</SourceFile>
+  <SourceTime>2017-04-08T10:57:15.5122319-04:00</SourceTime>
+  <DestFile>C:/Users/effen/OneDrive/Documents/GitHub/Asteroids/Asteroids/Content/bin/Windows/assets/ui/arena/compass/compass_needle.xnb</DestFile>
+  <DestTime>2017-04-10T11:54:38.729697-04:00</DestTime>
   <Importer>TextureImporter</Importer>
   <ImporterTime>2016-03-30T02:36:08-04:00</ImporterTime>
   <Processor>TextureProcessor</Processor>

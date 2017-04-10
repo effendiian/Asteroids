@@ -139,7 +139,7 @@ namespace Asteroids.Tools
         private void Draw()
         {
             Vector2 line = position + (Vector2.Normalize(vector) * MathHelper.Clamp(vector.Length(), clamp / 2, clamp * 2));
-            Game1.Pen.DrawLine((int)position.X, (int)position.Y, (int)line.X, (int)line.Y, (int)thickness, drawColor);
+            GlobalManager.Pen.DrawLine((int)position.X, (int)position.Y, (int)line.X, (int)line.Y, (int)thickness, drawColor);
         }
 
         public static void Draw(DebugLine line, bool clamp = false)
@@ -160,7 +160,7 @@ namespace Asteroids.Tools
                 line += (Vector2.Normalize(vec) * mag);
             }
 
-            Game1.Pen.DrawLine((int)pos.X, (int)pos.Y, (int)line.X, (int)line.Y, (int)thick, col);
+			GlobalManager.Pen.DrawLine((int)pos.X, (int)pos.Y, (int)line.X, (int)line.Y, (int)thick, col);
         }
         
     }

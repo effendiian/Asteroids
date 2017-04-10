@@ -122,7 +122,14 @@ namespace Asteroids.Tools
 
         #region Flags. // Contains flags for different states, such as initialization and debug status.
 
+		/// <summary>
+		/// Determines if the global manager has been initialized.
+		/// </summary>
         private static bool _initialized = false;
+
+		/// <summary>
+		/// Determines if debug information should be printed for the global manager.
+		/// </summary>
         private static bool _debug = false;
 
         #endregion
@@ -244,6 +251,22 @@ namespace Asteroids.Tools
             get { return _debug; }
             private set { _debug = value; }
         }
+
+		/// <summary>
+		/// Returns the main font.
+		/// </summary>
+		public static SpriteFont Large
+		{
+			get { return fonts[FontIDs.Main]; }
+		}
+
+		/// <summary>
+		/// Returns the small font.
+		/// </summary>
+		public static SpriteFont Small
+		{
+			get { return fonts[FontIDs.Small]; }
+		}
 
         #endregion
 

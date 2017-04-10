@@ -54,7 +54,7 @@ namespace Asteroids.Tools.States
 		{
 			ShapeDrawer pen = GlobalManager.Pen;
 
-			LoadButtons(new Button(Actions.Back, pen, Button.Positions.BottomRight, screenPadding.Get(-1), bounds, button, "Back"));
+			LoadButtons(new Button(Actions.Back, pen, Positions.BottomRight, screenPadding.Get(-1), bounds, button, "Back"));
 		}
 
 		#endregion

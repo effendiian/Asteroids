@@ -53,9 +53,9 @@ namespace Asteroids.Tools.States
 		public override void LoadButtons(Texture2D button, Padding screenPadding, Padding centerPadding, Vector2 bounds)
 		{
 			ShapeDrawer pen = GlobalManager.Pen;
-			LoadButtons(new Button(Actions.Resume, pen, Button.Positions.Center, new Vector2(0, centerPadding.GetY(-2)), bounds, button, "Resume"),
-				new Button(Actions.Quit, pen, Button.Positions.Center, new Vector2(0, centerPadding.GetY(-1)), null, button, "Quit to Windows"),
-				new Button(Actions.Back, pen, Button.Positions.BottomRight, screenPadding.Get(-1), bounds, button, "Back"));
+			LoadButtons(new Button(Actions.Resume, pen, Positions.Center, new Vector2(0, centerPadding.GetY(-2)), bounds, button, "Resume"),
+				new Button(Actions.Quit, pen, Positions.Center, new Vector2(0, centerPadding.GetY(-1)), null, button, "Quit to Windows"),
+				new Button(Actions.Back, pen, Positions.BottomRight, screenPadding.Get(-1), bounds, button, "Back"));
 		}
 
 		#endregion

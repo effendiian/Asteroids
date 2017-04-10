@@ -21,22 +21,23 @@ using Asteroids.Tools;
 
 namespace Asteroids.Entities
 {
-    public class Button
+	public enum Positions
+	{
+		TopLeft,
+		TopCenter,
+		TopRight,
+		CenterLeft,
+		Center,
+		CenterRight,
+		BottomLeft,
+		BottomCenter,
+		BottomRight,
+		Absolute // Absolute means the button isn't relative to any screen position.
+	}
+
+	public class Button
     {
         // Enum.
-        public enum Positions
-        {
-            TopLeft,
-            TopCenter,
-            TopRight,
-            CenterLeft,
-            Center,
-            CenterRight,
-            BottomLeft,
-            BottomCenter,
-            BottomRight,
-            Absolute // Absolute means the button isn't relative to any screen position.
-        }
 
         // Fields.
         // Use these fields to store important attributes.
@@ -178,8 +179,8 @@ namespace Asteroids.Entities
 
         private void SetPosition(Vector2 o)
         {
-            Vector2 c = Game1.ScreenCenter;
-            Vector2 b = Game1.ScreenBounds;
+            Vector2 c = GlobalManager.ScreenCenter;
+            Vector2 b = GlobalManager.ScreenBounds;
             Vector2 h = HalfSize;
             screen = b;
             
@@ -301,7 +302,7 @@ namespace Asteroids.Entities
         public void Update(GameTime gameTime)
         {
             // Recalculate the position.
-            if (screen != Game1.ScreenBounds)
+            if (screen != GlobalManager.ScreenBounds)
             {
                 CalculatePosition();
             }

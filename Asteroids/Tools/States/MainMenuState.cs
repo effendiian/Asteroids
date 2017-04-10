@@ -55,10 +55,10 @@ namespace Asteroids.Tools.States
 		{
 			ShapeDrawer pen = GlobalManager.Pen;
 
-			LoadButtons(new Button(Actions.Start, pen, Button.Positions.Center, new Vector2(0, centerPadding.GetY(-1)), bounds, button, "Start"), 
-				new Button(Actions.Options, pen, Button.Positions.Center, null, bounds, button, "Options"),
-				new Button(Actions.Scores, pen, Button.Positions.Center, new Vector2(0, centerPadding.GetY(1)), bounds, button, "Scores"),
-				new Button(Actions.Quit, pen, Button.Positions.Center, new Vector2(0, centerPadding.GetY(2)), bounds, button, "Exit"));
+			LoadButtons(new Button(Actions.Start, pen, Positions.Center, new Vector2(0, centerPadding.GetY(-1)), bounds, button, "Start"), 
+				new Button(Actions.Options, pen, Positions.Center, null, bounds, button, "Options"),
+				new Button(Actions.Scores, pen, Positions.Center, new Vector2(0, centerPadding.GetY(1)), bounds, button, "Scores"),
+				new Button(Actions.Quit, pen, Positions.Center, new Vector2(0, centerPadding.GetY(2)), bounds, button, "Exit"));
 		}
 
 		#endregion

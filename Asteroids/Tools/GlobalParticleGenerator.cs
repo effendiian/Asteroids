@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace Asteroids.Tools
 {
-    using Microsoft.Xna.Framework.Graphics;
+
+	// This class is obsolete. Keeping the text for future reference and refactors.
+
+   /* using Microsoft.Xna.Framework.Graphics;
     using Microsoft.Xna.Framework.Input;
     using Microsoft.Xna.Framework;
 
@@ -61,7 +64,7 @@ namespace Asteroids.Tools
             tex = _texture;
             scale = _scale;
             SetPosition(_pos, _rad);
-            point1 = Game1.ScreenCenter;
+            point1 = GlobalManager.ScreenCenter;
             point2 = point1 + new Vector2(1, 1);
             point3 = point1 - new Vector2(1, 1);
             particles = new List<Particle>();
@@ -74,7 +77,7 @@ namespace Asteroids.Tools
             // Use points to get velocity.
             float mag = Math.Abs(Vector2.Distance(point1, point2));
 
-            Particle p = new Particle(Game1.Pen, tex, "Particle (Global)", Color.LightGoldenrodYellow, null, new Vector2(15, 15) * scale, null, 1, radius);
+            Particle p = new Particle(GlobalManager.Pen, tex, "Particle (Global)", Color.LightGoldenrodYellow, null, new Vector2(15, 15) * scale, null, 1, radius);
             p.Start(10);
             AddParticle(p);
         }
@@ -91,11 +94,11 @@ namespace Asteroids.Tools
             if (!_useRadius)
             {
                 Rectangle bounds = new Rectangle(new Point((int)point1.X, (int)point1.Y), new Point((int)point3.X, (int)point3.Y));
-                p = new Particle(Game1.Pen, tex, "Particle (Local)" + location.ToString(), Color.LightGoldenrodYellow, location, new Vector2(15, 15) * scale, velocity, _bounds: bounds, _speed: mag);
+                p = new Particle(this, tex, "Particle (Local)" + location.ToString(), Color.LightGoldenrodYellow, location, new Vector2(15, 15) * scale, velocity, _bounds: bounds, _speed: mag);
             }
             else
             {
-                p = new Particle(Game1.Pen, tex, "Particle (Local)" + location.ToString(), Color.LightGoldenrodYellow, location, new Vector2(15, 15) * scale, velocity, radius, mag);
+                p = new Particle(this, tex, "Particle (Local)" + location.ToString(), Color.LightGoldenrodYellow, location, new Vector2(15, 15) * scale, velocity, radius, mag);
             }
             p.Start(10);
             AddParticle(p);
@@ -124,7 +127,7 @@ namespace Asteroids.Tools
                 if (InputManager.IsKeyReleased(Keys.B))
                 {
                     ToggleMode();
-                    point1 = Game1.ScreenCenter;
+                    point1 = GlobalManager.ScreenCenter;
                     point2 = point1 + new Vector2(1, 1);
                     keypress = true;
                 }
@@ -283,13 +286,13 @@ namespace Asteroids.Tools
                 {
                     int distX = (int)(point3.X - point1.X);
                     int distY = (int)(point3.Y - point1.Y);
-                    Game1.Pen.DrawRectOutline((int)point1.X, (int)point1.Y, distX, distY, Color.White);
+					GlobalManager.Pen.DrawRectOutline((int)point1.X, (int)point1.Y, distX, distY, Color.White);
                 }
 
                 if (_debug)
                 {
 
-                    Padding padding = new Padding(0, Game1.Pen.StringHeight("A"));
+                    Padding padding = new Padding(0, GlobalManager.Pen.StringHeight("A"));
                     Vector2 position = new Vector2(10, 10 + padding.Y);
 
                     switch (mode)
@@ -452,4 +455,5 @@ namespace Asteroids.Tools
         }
 
     }
+	*/
 }
