@@ -91,7 +91,7 @@ namespace Asteroids.Tools.States
 
                 if (IsActionFired(Actions.Scores))
                 {
-                    StateManager.ChangeState(StateType.Scores);
+                    StateManager.ChangeState(StateType.Gameover);
                 }
             }
         }

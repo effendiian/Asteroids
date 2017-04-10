@@ -107,7 +107,12 @@ namespace Asteroids.Tools
         /// <summary>
         /// This state tells the game to quit.
         /// </summary>
-        Quit
+        Quit,
+
+		/// <summary>
+		/// This is the null state.
+		/// </summary>
+		Null
     }
 
     #endregion
@@ -408,16 +413,38 @@ namespace Asteroids.Tools
             ChangeState(StateType.Quit);
             previousState = StateType.Main;
         }
+		
+		/// <summary>
+		/// Add a new message to the list of messages that will be queued.
+		/// </summary>
+		/// <param name="msg">Message string.</param>
+		/// <param name="pos">Position of the message.</param>
+		/// <param name="pad">Padding for the message.</param>
+		/// <param name="draw">Color to draw the message in.</param>
+		/// <param name="order">Order of priority.</param>
+		/// <param name="alignment">Alignment of the string.</param>
+		public static void AddMessage(string msg, Vector2 pos, Padding pad, Color draw, int order, int alignment)
+		{
+			messages.Add(new Message(msg, pos, pad, draw, order, alignment));
+		}
 
+		/// <summary>
+		/// Add a message object to the list of messages that will be queued.
+		/// </summary>
+		/// <param name="msg">Message object.</param>
+		public static void AddMessage(Message msg)
+		{
+			messages.Add(msg);
+		}
 
-        #endregion
+		#endregion
 
-        #region Reset/Start/Stop methods. // Reset, start, or stop the current state.
+		#region Reset/Start/Stop methods. // Reset, start, or stop the current state.
 
-        /// <summary>
-        /// Reset the current state.
-        /// </summary>
-        public static void Reset()
+		/// <summary>
+		/// Reset the current state.
+		/// </summary>
+		public static void Reset()
         {
             states[currentState].Reset();
         }
@@ -447,9 +474,14 @@ namespace Asteroids.Tools
         /// </summary>
         public static void Update(GameTime gameTime)
         {
-            states[currentState].Update(gameTime);
-        }
+			State curr = states[currentState];
 
+			if (curr.StateType != StateType.Null && !curr.Empty)
+			{
+				curr.Update(gameTime);
+			}
+        }
+		
         #endregion
 
         #region Draw methods.
@@ -466,7 +498,6 @@ namespace Asteroids.Tools
         #endregion
 
         #endregion
-
 
         public static void CreateStateType(SpriteBatch sb, ShapeDrawer pen, Dictionary<TextureIDs, Texture2D> textures)
         {
@@ -550,38 +581,7 @@ namespace Asteroids.Tools
         }
 
 
-        
-        public static void AddMessage(string msg, Vector2 pos, Padding pad, Color draw, int order, int alignment)
-        {
-            messages.Add(new Message(msg, pos, pad, draw, order, alignment));
-        }
 
-        public static void AddMessage(Message msg)
-        {
-            messages.Add(msg);
-        }
-        
-        public static string GetStateTypeAsString(StateType type)
-        {
-            // http://stackoverflow.com/questions/630803/associating-enums-with-strings-in-c-sharp
 
-            switch (type)
-            {
-                case StateType.Arena:
-                    return "[Arena]";
-                case StateType.Gameover:
-                    return "[Scores]";
-                case StateType.Main:
-                    return "[Main]";
-                case StateType.Options:
-                    return "[Options]";
-                case StateType.Pause:
-                    return "[Pause]";
-                case StateType.Quit:
-                    return "[Quit]";
-            }
-
-            return "[Error]";
-        }
-    }
+	}
 }

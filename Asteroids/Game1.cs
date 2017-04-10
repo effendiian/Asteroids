@@ -194,7 +194,6 @@ namespace Asteroids
         {
             // TODO: Add your update logic here
             GlobalManager.Update(gameTime);
-            GlobalManager.UpdateGUI(gameTime);
 
             base.Update(gameTime);
         }
@@ -215,7 +214,6 @@ namespace Asteroids
             spriteBatch.Begin();
 
             GlobalManager.Draw();
-            GlobalManager.DrawGUI();
 
             spriteBatch.End();
 

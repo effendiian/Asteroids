@@ -474,7 +474,7 @@ namespace Asteroids.Tools
         /// <param name="gameTime">A snapshot of the current time span.</param>
         public static void Update(GameTime gameTime)
         {
-            if (StateManager.GetState() == States.Quit || keyListener.IsFired(Commands.Quit))
+            if (StateManager.GetState() == StateType.Quit || keyListener.IsFired(Commands.Quit))
             {
                 Main.Exit();
             }
@@ -490,18 +490,6 @@ namespace Asteroids.Tools
 
                 // Handle state.
                 StateManager.Update(gameTime);
-            }
-        }
-
-        /// <summary>
-        /// Update the main GUI. Updates the GUI through the StateManager.
-        /// </summary>
-        /// <param name="gameTime">A snapshot of the current time span.</param>
-        public static void UpdateGUI(GameTime gameTime)
-        {
-            if (Initialized)
-            {
-                StateManager.UpdateGUI(gameTime);
             }
         }
 
@@ -537,18 +525,7 @@ namespace Asteroids.Tools
                 StateManager.Draw();
             }
         }
-
-        /// <summary>
-        /// Ask the StateManager to draw any GUI components to the screen.
-        /// </summary>
-        public static void DrawGUI()
-        {
-            if (Initialized)
-            {
-                StateManager.DrawGUI(Pen);
-            }
-        }
-
+		
         #endregion
 
         #region Service methods. // Methods that aid the program or complete some limited, focused action within the game.

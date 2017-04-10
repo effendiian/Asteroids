@@ -16,6 +16,7 @@ using Microsoft.Xna.Framework.Graphics;
 // Asteroid using statments.
 using Asteroids.Entities;
 using Asteroids.Attributes;
+using Asteroids.Tools.States;
 
 #endregion
 
@@ -28,11 +29,11 @@ namespace Asteroids.Tools
     {
 
         #region Fields. // Private data associated with a state.
-
+				
         /// <summary>
-        /// The state's type.
+        /// The state's type and labeled information.
         /// </summary>
-        private StateType stateType;
+        private StateInfo stateInfo;
 
         /// <summary>
         /// Stores the scale of the entities inside the current state.
@@ -63,7 +64,7 @@ namespace Asteroids.Tools
         /// Maximum amount of entities that can be inside a state.
         /// </summary>
         private int entityCap;
-
+		
         #endregion
 
         #region Flags. // Flags that hold boolean status information.
@@ -73,17 +74,24 @@ namespace Asteroids.Tools
         /// </summary>
         private bool _debug = false;
 
-        #endregion
+		#endregion
 
-        #region Properties. // The properties that provide access to private data.
+		#region Properties. // The properties that provide access to private data.
+		
+		/// <summary>
+		/// The info surrounding the state type of this state.
+		/// </summary>
+		public StateInfo Info
+		{
+			get { return this.stateInfo; }
+		}
 
-        /// <summary>
-        /// The type of state this state is.
-        /// </summary>
-        public StateType StateType
+		/// <summary>
+		/// The type of state this state is.
+		/// </summary>
+		public StateType StateType
         {
-            get { return this.stateType; }
-            private set { this.stateType = value; }
+            get { return this.stateInfo.Type; }
         }
 
         /// <summary>
@@ -195,7 +203,7 @@ namespace Asteroids.Tools
         /// <param name="_scale">The scale to draw the items in this state.</param>
         public State(StateType type, ColorSet set, float _scale = 1.0f)
         {
-            this.stateType = type;
+			this.stateInfo = StateInfo.GetStateInfo(type);
             this.colorset = new ColorSet();
             this.colorset.AssignColors(set, ColorType.Draw, ColorType.Other); // Only get these colors from the pre-existing colorset.
             this.entities = new List<Entity>();
@@ -215,8 +223,8 @@ namespace Asteroids.Tools
         /// <param name="_scale">The scale to draw the items in this state.</param>
         public State(StateType type, Color _draw, Color _bg, float _scale = 1.0f)
         {
-            this.stateType = type;
-            this.colorset = new ColorSet(_draw, null, null, null, _bg);
+            this.stateInfo = StateInfo.GetStateInfo(type);
+			this.colorset = new ColorSet(_draw, null, null, null, _bg);
             this.entities = new List<Entity>();
             this.buttons = new List<Button>();
             this.scheme = new ControlScheme();
@@ -608,10 +616,15 @@ namespace Asteroids.Tools
         /// <param name="gameTime">A snapshot of the current elapsed time.</param>
         public virtual void Update(GameTime gameTime)
         {
-            HandleInput();
-            Update(gameTime, this.entities);
-
-            UpdateGUI(gameTime);
+			if (this.StateType != StateType.Null)
+			{
+				HandleInput();
+				if (!this.Empty)
+				{
+					Update(gameTime, this.entities);
+					UpdateGUI(gameTime);
+				}
+			}
         }
 
         /// <summary>
@@ -633,10 +646,14 @@ namespace Asteroids.Tools
         /// <param name="gameTime">A snapshot of the current elapsed time.</param>
         public virtual void UpdateGUI(GameTime gameTime)
         {
-            HandleGUIInput();
-            QueueGUIMessages();
-            UpdateGUI(gameTime, this.buttons);
-            QueueDebugMessages();
+			if (!this.Empty && this.StateType != StateType.Null)
+			{
+				HandleGUIInput();
+				QueueGUIMessages();
+				UpdateGUI(gameTime, this.buttons);
+			}
+
+			QueueDebugMessages();
         }
 
         /// <summary>
@@ -905,7 +922,7 @@ namespace Asteroids.Tools
         {
             string value = "";
 
-            value += "Current State: " + StateManager.GetStateTypeAsString(this.stateType) + "\n";
+            value += "Current State: " + this.stateInfo.Label + "\n";
             value += "Entities: [" + this.Count + "\\" + this.Capacity + "] | ";
             value += "Buttons: [" + this.buttons.Count() + "] | ";
             value += "Scale: [" + (this.Scale * 100) + "%]\n";

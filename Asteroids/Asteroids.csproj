@@ -67,6 +67,7 @@
     <Compile Include="Tools\States\OptionsState.cs" />
     <Compile Include="Tools\States\PauseState.cs" />
     <Compile Include="Tools\States\ScoresState.cs" />
+    <Compile Include="Tools\States\StateInfo.cs" />
     <Compile Include="Tools\Timer.cs" />
   </ItemGroup>
   <ItemGroup>
