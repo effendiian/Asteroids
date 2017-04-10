@@ -42,7 +42,7 @@ namespace Asteroids.Entities
         // Use these fields to store important attributes.
         ShapeDrawer pen; // The shape drawer.
         Texture2D image; // Hold the button image.
-        StateManager.Actions action; // The action this button performs.
+        Actions action; // The action this button performs.
         Positions location;
 
         Vector2 offset; // Offset of the button.
@@ -70,7 +70,7 @@ namespace Asteroids.Entities
             set { this.enabled = !value; }
         }
 
-        public StateManager.Actions Action
+        public Actions Action
         {
             get { return this.action; }
         }
@@ -98,7 +98,7 @@ namespace Asteroids.Entities
         }
 
         // Constructors.
-        public Button(StateManager.Actions _action, ShapeDrawer _pen,
+        public Button(Actions _action, ShapeDrawer _pen,
             Positions _location = Positions.Center, Vector2? _offset = null, Vector2? _bounds = null, 
             Texture2D buttonTexture = null, string buttonText = null)
         {

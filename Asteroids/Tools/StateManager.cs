@@ -26,12 +26,12 @@ using Asteroids.Tools.States;
 namespace Asteroids.Tools
 {
 
-    #region Enums. // Contains definitions for the Actions and StateType enums.
+	#region Enums. // Contains definitions for the Actions and StateType enums.
 
-    /// <summary>
-    /// Possible actions to associate with a button press.
-    /// </summary>
-    public enum Actions
+	/// <summary>
+	/// Possible actions to associate with a button press.
+	/// </summary>
+	public enum Actions
     {
         /// <summary>
         /// Start a new game.
@@ -120,12 +120,76 @@ namespace Asteroids.Tools
     public class StateManager
     {
 
-        #region Fields. // Private data, lists, and hashtables for tracking the states.
+		#region Constants. // Contains definitions for state colors.
 
-        /// <summary>
-        /// A collection of all the states.
-        /// </summary>
-        private static List<State> stateList;
+		/// <summary>
+		/// The draw color for the Menu state.
+		/// </summary>
+		private static readonly Color MENU_DRAW_COL = Color.Black;
+
+		/// <summary>
+		/// The background color for the Menu state.
+		/// </summary>
+		private static readonly Color MENU_BACK_COL = Color.AntiqueWhite;
+
+		/// <summary>
+		/// The draw color for the Arena state.
+		/// </summary>
+		private static readonly Color AREN_DRAW_COL = Color.LimeGreen;
+
+		/// <summary>
+		/// The background color for the Arena state.
+		/// </summary>
+		private static readonly Color AREN_BACK_COL = Color.Black;
+
+		/// <summary>
+		/// The draw color for the Pause state.
+		/// </summary>
+		private static readonly Color PAUS_DRAW_COL = Color.Black;
+
+		/// <summary>
+		/// The background color for the Pause state.
+		/// </summary>
+		private static readonly Color PAUS_BACK_COL = Color.Beige;
+
+		/// <summary>
+		/// The draw color for the Options state.
+		/// </summary>
+		private static readonly Color OPTN_DRAW_COL = Color.Black;
+
+		/// <summary>
+		/// The background color for the Options state.
+		/// </summary>
+		private static readonly Color OPTN_BACK_COL = Color.Beige;
+
+		/// <summary>
+		/// The draw color for the Scores state.
+		/// </summary>
+		private static readonly Color SCOR_DRAW_COL = Color.Black;
+
+		/// <summary>
+		/// The background color for the Score state.
+		/// </summary>
+		private static readonly Color SCOR_BACK_COL = Color.LavenderBlush;
+
+		/// <summary>
+		/// The draw color for the Quit state.
+		/// </summary>
+		private static readonly Color QUIT_DRAW_COL = Color.Black;
+
+		/// <summary>
+		/// The background color for the Quit state.
+		/// </summary>
+		private static readonly Color QUIT_BACK_COL = Color.BlueViolet;
+
+		#endregion
+
+		#region Fields. // Private data, lists, and hashtables for tracking the states.
+
+		/// <summary>
+		/// A collection of all the states.
+		/// </summary>
+		private static List<State> stateList;
 
         /// <summary>
         /// A hashtable of StateType enum modes and states.
@@ -227,19 +291,91 @@ namespace Asteroids.Tools
             currentState = StateType.Main;
             previousState = currentState;
 
+			InitializeStates();
+
             // Set initialization status to true.
             _initialized = true;
         }
 
-        #endregion
+		/// <summary>
+		/// Called to initialize the states in the hashtable.
+		/// </summary>
+		private static void InitializeStates()
+		{
 
-        #region Service methods. // Methods that add functionality to the class or affect member variables.
+			// Main State.
+			StateType state = StateType.Main;
+			AddState(state, MENU_DRAW_COL, MENU_BACK_COL);
 
-        /// <summary>
-        /// Sets the scale of all of the states.
-        /// </summary>
-        /// <param name="_scale">The scale to be set to.</param>
-        public static void SetScale(float _scale = 1.0f)
+			// Options State.
+			state = StateType.Options;
+			AddState(state, OPTN_DRAW_COL, OPTN_BACK_COL);
+
+			// Arena State.
+			state = StateType.Arena;
+			AddState(state, AREN_DRAW_COL, AREN_BACK_COL);
+
+			// Pause State.
+			state = StateType.Pause;
+			AddState(state, PAUS_DRAW_COL, PAUS_BACK_COL);
+
+			// Gameover State.
+			state = StateType.Gameover;
+			AddState(state, SCOR_DRAW_COL, SCOR_BACK_COL);
+
+			// Quit State.
+			state = StateType.Quit;
+			AddState(state, QUIT_DRAW_COL, QUIT_BACK_COL);
+			
+		}
+		
+		/// <summary>
+		/// Load the states and their entities and buttons.
+		/// </summary>
+		/// <param name="textures">Texture hashtable.</param>
+		public static void LoadStates(Dictionary<TextureIDs, Texture2D> textures)
+		{
+			// Load the entities.
+			LoadEntities(textures);
+
+			// Get the base button texture and load the buttons for each of the states.
+			LoadButtons(textures[TextureIDs.Button]);
+		}
+
+		/// <summary>
+		/// Load the entities into their respective states.
+		/// </summary>
+		/// <param name="textures">Texture hashtable.</param>
+		private static void LoadEntities(Dictionary<TextureIDs, Texture2D> textures)
+		{
+			foreach (State state in stateList)
+			{
+				state.LoadEntities(textures);
+			}
+		}
+
+		/// <summary>
+		/// Load the buttons into their respective states.
+		/// </summary>
+		/// <param name="button">Texture of the base button backing.</param>
+		private static void LoadButtons(Texture2D button)
+		{
+			// Main menu.
+			foreach (State state in stateList)
+			{
+				state.LoadButtons(button, new Padding(10), new Padding(60), new Vector2(135, 45));
+			}
+		}
+
+		#endregion
+
+		#region Service methods. // Methods that add functionality to the class or affect member variables.
+
+		/// <summary>
+		/// Sets the scale of all of the states.
+		/// </summary>
+		/// <param name="_scale">The scale to be set to.</param>
+		public static void SetScale(float _scale = 1.0f)
         {
             scale = _scale;
 
@@ -348,70 +484,88 @@ namespace Asteroids.Tools
         /// </summary>
         /// <param name="targetState">State to change to.</param>
         public static void ChangeState(StateType targetState)
-        {
-            // When changing states, set the previous state to the current state, 
-            // Before setting target.
+		{
+			if (Initialized)
+			{
+				// When changing states, set the previous state to the current state, 
+				// Before setting target.
 
-            previousState = currentState;
-            currentState = targetState;
+				previousState = currentState;
+				currentState = targetState;
 
-            states[previousState].Disable();
-            states[currentState].Enable();
+				states[previousState].Disable();
+				states[currentState].Enable();
+			}
         }
 
         /// <summary>
         /// Rever to the previous state.
         /// </summary>
         public static void RevertState()
-        {
-            // Revert the states. The current state will be lost.
+		{
+			if (Initialized)
+			{
+				// Revert the states. The current state will be lost.
 
-            states[currentState].Disable();
+				states[currentState].Disable();
 
-            currentState = previousState;
-            states[currentState].Enable();
+				currentState = previousState;
+				states[currentState].Enable();
+			}
         }
 
         /// <summary>
         /// Toggle the pause menu.
         /// </summary>
         public static void TogglePause()
-        {
-            if (currentState != StateType.Pause)
-            {
-                ChangeState(StateType.Pause);
-            }
-            else
-            {
-                RevertState();
-            }
+		{
+			if (Initialized)
+			{
+				if (currentState != StateType.Pause)
+				{
+					ChangeState(StateType.Pause);
+				}
+				else
+				{
+					RevertState();
+				}
+			}
         }
 
         /// <summary>
         /// Start the game by switching to the Arena state.
         /// </summary>
         public static void StartGame()
-        {
-            ChangeState(StateType.Arena);
-            states[currentState].Start();
+		{
+			if (Initialized)
+			{
+				ChangeState(StateType.Arena);
+				states[currentState].Start();
+			}
         }
 
         /// <summary>
         /// Go to the scores screen.
         /// </summary>
         public static void EndGame()
-        {
-            ChangeState(StateType.Gameover);
-            previousState = StateType.Main;
+		{
+			if (Initialized)
+			{
+				ChangeState(StateType.Gameover);
+				previousState = StateType.Main;
+			}
         }
 
         /// <summary>
         /// Quit the game.
         /// </summary>
         public static void Quit()
-        {
-            ChangeState(StateType.Quit);
-            previousState = StateType.Main;
+		{
+			if (Initialized)
+			{
+				ChangeState(StateType.Quit);
+				previousState = StateType.Main;
+			}
         }
 		
 		/// <summary>
@@ -446,23 +600,32 @@ namespace Asteroids.Tools
 		/// </summary>
 		public static void Reset()
         {
-            states[currentState].Reset();
+			if (Initialized)
+			{
+				states[currentState].Reset();
+			}
         }
 
         /// <summary>
         /// Start the current state.
         /// </summary>
         public static void Start()
-        {
-            states[currentState].Start();
+		{
+			if (Initialized)
+			{
+				states[currentState].Start();
+			}
         }
 
         /// <summary>
         /// Stop the current state.
         /// </summary>
         public static void Stop()
-        {
-            states[currentState].Stop();
+		{
+			if (Initialized)
+			{
+				states[currentState].Stop();
+			}
         }
 
         #endregion
@@ -474,11 +637,14 @@ namespace Asteroids.Tools
         /// </summary>
         public static void Update(GameTime gameTime)
         {
-			State curr = states[currentState];
-
-			if (curr.StateType != StateType.Null && !curr.Empty)
+			if (Initialized)
 			{
-				curr.Update(gameTime);
+				State curr = states[currentState];
+
+				if (curr.StateType != StateType.Null && !curr.Empty)
+				{
+					curr.Update(gameTime);
+				}
 			}
         }
 		
@@ -491,97 +657,16 @@ namespace Asteroids.Tools
         /// </summary>
         public static void Draw()
         {
-            states[currentState].Draw();
-            states[currentState].DrawGUI();
+			if (Initialized)
+			{
+				states[currentState].Draw();
+				states[currentState].DrawGUI();
+			}
         }
 
-        #endregion
+		#endregion
 
-        #endregion
-
-        public static void CreateStateType(SpriteBatch sb, ShapeDrawer pen, Dictionary<TextureIDs, Texture2D> textures)
-        {
-            // Dimensions.
-            Padding screenPadding = new Padding(10);
-            Padding centerPadding = new Padding(60);
-
-            Vector2 bounds = new Vector2(135, 45);
-            Vector2 screen = Game1.ScreenBounds;
-            Vector2 center = Game1.ScreenCenter;
-
-            // Buttons.
-            Texture2D button = textures[TextureIDs.Button];
-            Button start = new Button(Actions.Start, pen, Button.Positions.Center, new Vector2(0, centerPadding.GetY(-1)), bounds, button, "Start");
-            Button options = new Button(Actions.Options, pen, Button.Positions.Center, null, bounds, button, "Options");
-            Button scores = new Button(Actions.Scores, pen, Button.Positions.Center, new Vector2(0, centerPadding.GetY(1)), bounds, button, "Scores");
-            Button exit = new Button(Actions.Quit, pen, Button.Positions.Center, new Vector2(0, centerPadding.GetY(2)), bounds, button, "Exit");
-
-            Button dimensions = new Button(Actions.Dimensions, pen, Button.Positions.Center, null, null, button, "Change Dimensions");
-            Button pause = new Button(Actions.Pause, pen, Button.Positions.BottomRight, screenPadding.Get(-1), bounds, button, "Pause");
-            Button resume = new Button(Actions.Resume, pen, Button.Positions.Center, new Vector2(0, centerPadding.GetY(-2)), bounds, button, "Resume");
-            Button quit = new Button(Actions.Quit, pen, Button.Positions.Center, new Vector2(0, centerPadding.GetY(-1)), null, button, "Quit to Windows");
-
-            Button back = new Button(Actions.Back, pen, Button.Positions.BottomRight, screenPadding.Get(-1), bounds, button, "Back"); // Reused.
-           
-            // Asteroid texture set-up.
-            List<Texture2D> asteroidTextures = new List<Texture2D>();
-            asteroidTextures.Add(textures[TextureIDs.Asteroid1]);
-            asteroidTextures.Add(textures[TextureIDs.Asteroid2]);
-            asteroidTextures.Add(textures[TextureIDs.Asteroid3]);
-
-            // Entities
-            Asteroid asteroid = new Asteroid(pen, asteroidTextures[0], "Asteroid");
-            TestMover test = new TestMover(pen, textures[TextureIDs.Test], Color.LimeGreen, _size: new Vector2(15, 15));
-            TestMover test2 = new TestMover(pen, textures[TextureIDs.Test], Color.LimeGreen, _size: new Vector2(15, 15));
-            test2.Tag = "!Test2";
-
-            // Initialize the global particle generator for testing.
-            // GlobalParticleGenerator.Initialize(textures[TextureIDs.Bullet], null, 10);
-
-            // Entities under player control.
-            test.PlayerControl = true;
-            test2.PlayerControl = false;
-            
-            // Main State.
-            StateType state = StateType.Main;
-            AddState(state, new State(pen, Color.Black, Color.AntiqueWhite));
-            AddButtonToState(state, start); // Start button.          
-            AddButtonToState(state, exit); // Exit button.      
-            AddButtonToState(state, options); // Options button.
-            AddButtonToState(state, scores); // Score button.
-
-            // Options State.
-            state = StateType.Options;
-            AddState(state, new State(pen, Color.Black, Color.Beige));
-            AddButtonToState(state, back); // Back button.  
-            AddButtonToState(state, dimensions); // Dimensions 
-
-            // Arena State.
-            state = StateType.Arena;
-            AddState(state, new State(pen, Color.LimeGreen, Color.Black));
-            AddButtonToState(state, pause);
-            AddEntityToState(state, test);
-            AddEntityToState(state, test2);
-            AddEntityToState(state, asteroid);
-
-            // Pause State.
-            state = StateType.Pause;
-            AddState(state, new State(pen, Color.Black, Color.Beige));
-            AddButtonToState(state, resume);
-            AddButtonToState(state, quit);
-            
-            // Gameover State.
-            state = StateType.Gameover;
-            AddState(state, new State(pen, Color.Black, Color.LavenderBlush));
-            AddButtonToState(state, back); // Back button.  
-
-            // Quit State.
-            state = StateType.Quit;
-            AddState(state, new State(pen, Color.Black, Color.BlueViolet));            
-        }
-
-
-
+		#endregion
 
 	}
 }

@@ -234,18 +234,18 @@ namespace Asteroids.Tools
             BindKeys();
         }
 
-        #endregion
+		#endregion
 
-        #region Methods. // Flags checking for the existence of the entities.
+		#region Methods. // Flags checking for the existence of the entities.
 
-        #region Exist methods. // Methods that perform existence checks.
+		#region Exist methods. // Methods that perform existence checks.
 
-        /// <summary>
-        /// Checks if an entity with the provided tag exists.
-        /// </summary>
-        /// <param name="e">The tag to search for.</param>
-        /// <returns>Returns true if the entity exists.</returns>
-        public bool Exists(string e)
+		/// <summary>
+		/// Checks if an entity with the provided tag exists.
+		/// </summary>
+		/// <param name="e">The tag to search for.</param>
+		/// <returns>Returns true if the entity exists.</returns>
+		public bool Exists(string e)
         {
             return Exists(GetEntity(e));
         }
@@ -275,17 +275,63 @@ namespace Asteroids.Tools
             return Exists(GetEntity(type));
         }
 
-        #endregion
+		#endregion
 
-        #region Entity methods. // Get and add entities using various types of keys.
+		#region Load methods. // Called to help faciliate the addition of entities to a given state.
 
-        /// <summary>
-        /// Gets a list of entities that match a particular tag.
-        /// </summary>
-        /// <param name="source">Entities to search for matches inside of.</param>
-        /// <param name="key">The tag to look for.</param>
-        /// <returns>Returns a list of entities inside the provided source that have a tag matching the key.</returns>
-        public List<Entity> GetEntitiesFromList(List<Entity> source, string key)
+		/// <summary>
+		/// Faciliate the addition of entities to a given state.
+		/// </summary>
+		/// <param name="textures">Texture2D hashtable.</param>
+		public virtual void LoadEntities(Dictionary<TextureIDs, Texture2D> textures)
+		{
+			// Snub. Should be overriden by children.
+		}
+
+		/// <summary>
+		/// Add a series of pre-existing entities.
+		/// </summary>
+		/// <param name="entity"></param>
+		protected void LoadEntities(params Entity[] entity)
+		{
+			foreach (Entity e in entity)
+			{
+				this.AddEntity(e);
+			}
+		}
+
+		/// <summary>
+		/// Facilitate the addition of buttons to a given state.
+		/// </summary>
+		/// <param name="button">Texture of the button.</param>
+		public virtual void LoadButtons(Texture2D button, Padding screenPadding, Padding centerPadding, Vector2 bounds)
+		{
+			// Snub. Should be overriden by children.
+		}
+
+		/// <summary>
+		/// Add a series of pre-existing buttons.
+		/// </summary>
+		/// <param name="buttons">Array of buttons to be added.</param>
+		protected void LoadButtons(params Button[] button)
+		{
+			foreach (Button b in button)
+			{
+				this.AddButton(b);
+			}
+		}
+
+		#endregion
+
+		#region Entity methods. // Get and add entities using various types of keys.
+
+		/// <summary>
+		/// Gets a list of entities that match a particular tag.
+		/// </summary>
+		/// <param name="source">Entities to search for matches inside of.</param>
+		/// <param name="key">The tag to look for.</param>
+		/// <returns>Returns a list of entities inside the provided source that have a tag matching the key.</returns>
+		public List<Entity> GetEntitiesFromList(List<Entity> source, string key)
         {
             List<Entity> results = new List<Entity>();
 

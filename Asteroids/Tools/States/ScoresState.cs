@@ -12,6 +12,7 @@ using System.Collections.Generic;
 // MonoGame using statements.
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Graphics;
 
 // Asteroids using statements.
 using Asteroids.Attributes;
@@ -39,16 +40,31 @@ namespace Asteroids.Tools.States
             // Any special instructions for the scores menu should take place here.
         }
 
-        #endregion
+		#endregion
 
-        #region Methods. // Methods that have been overriden from the parent class.
-        
-        #region Update methods. // Update calls for the Gameover.
+		#region Methods. // Methods that have been overriden from the parent class.
 
-        /// <summary>
-        /// Bind the debug key and escape key for the Gameover.
-        /// </summary>
-        protected override void BindKeys()
+		#region Load methods. // Called to help faciliate the addition of entities to a given state.
+
+		/// <summary>
+		/// Facilitate the addition of buttons to a given state.
+		/// </summary>
+		/// <param name="button">Texture of the button.</param>
+		public override void LoadButtons(Texture2D button, Padding screenPadding, Padding centerPadding, Vector2 bounds)
+		{
+			ShapeDrawer pen = GlobalManager.Pen;
+
+			LoadButtons(new Button(Actions.Back, pen, Button.Positions.BottomRight, screenPadding.Get(-1), bounds, button, "Back"));
+		}
+
+		#endregion
+
+		#region Update methods. // Update calls for the Gameover.
+
+		/// <summary>
+		/// Bind the debug key and escape key for the Gameover.
+		/// </summary>
+		protected override void BindKeys()
         {
             Controls.Bind(Commands.Debug, Keys.D, ActionType.Released);
             Controls.Bind(Commands.Back, Keys.Escape, ActionType.Released);

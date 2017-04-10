@@ -295,8 +295,8 @@ namespace Asteroids.Tools
             SpriteBatch = _sb;
             Pen = new ShapeDrawer(_sb, fonts[FontIDs.Main], Main.GraphicsDevice);
 
-            // Set up the shapes.
-            StateManager.CreateStates(SpriteBatch, Pen, textures);
+            // Set up the states.
+            StateManager.LoadStates(textures);
         }
 
         /// <summary>
@@ -323,7 +323,7 @@ namespace Asteroids.Tools
         /// Loads in a series of textures and fonts that still need to be loaded in through the Content pipeline.
         /// </summary>
         /// <param name="_sb">Main instance of this game's <see cref="Microsoft.Xna.Framework.Graphics.SpriteBatch"/> object.</param>
-        /// <param name="_textures">Associations of <see cref="TextureIDs"/> ids and <see cref="string"/> paths to <see cref="Texture2D"/> objects.</param>
+        /// <param name="_texturePaths">Associations of <see cref="TextureIDs"/> ids and <see cref="string"/> paths to <see cref="Texture2D"/> objects.</param>
         /// <param name="_textureIDs">List of <see cref="TextureIDs"/> ids with associations.</param>
         /// <param name="_fonts">Associations of <see cref="FontIDs"/> ids and <see cref="string"/> paths to <see cref="SpriteFont"/> objects.</param>
         /// <param name="_fontIDs">List of <see cref="FontIDs"/> ids with associations.</param>

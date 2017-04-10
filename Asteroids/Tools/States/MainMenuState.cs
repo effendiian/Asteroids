@@ -4,12 +4,20 @@
 
 #region Using statements.
 
+// System using statements.
+using System;
+using System.Collections;
+using System.Collections.Generic;
+
 // MonoGame using statements.
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Graphics;
 
 // Asteroids using statements.
 using Asteroids.Attributes;
+using Asteroids.Tools;
+using Asteroids.Entities;
 
 #endregion
 
@@ -33,16 +41,34 @@ namespace Asteroids.Tools.States
             // Any special instructions for the main menu should take place here.
         }
 
-        #endregion
+		#endregion
 
-        #region Methods. // Methods that have been overriden from the parent class.
-        
-        #region Update methods. // Update calls for the main menu.
+		#region Methods. // Methods that have been overriden from the parent class.
 
-        /// <summary>
-        /// Bind the debug key and escape key for the Main menu.
-        /// </summary>
-        protected override void BindKeys()
+		#region Load methods. // Called to help faciliate the addition of entities to a given state.
+		
+		/// <summary>
+		/// Facilitate the addition of buttons to a given state.
+		/// </summary>
+		/// <param name="button">Texture of the button.</param>
+		public override void LoadButtons(Texture2D button, Padding screenPadding, Padding centerPadding, Vector2 bounds)
+		{
+			ShapeDrawer pen = GlobalManager.Pen;
+
+			LoadButtons(new Button(Actions.Start, pen, Button.Positions.Center, new Vector2(0, centerPadding.GetY(-1)), bounds, button, "Start"), 
+				new Button(Actions.Options, pen, Button.Positions.Center, null, bounds, button, "Options"),
+				new Button(Actions.Scores, pen, Button.Positions.Center, new Vector2(0, centerPadding.GetY(1)), bounds, button, "Scores"),
+				new Button(Actions.Quit, pen, Button.Positions.Center, new Vector2(0, centerPadding.GetY(2)), bounds, button, "Exit"));
+		}
+
+		#endregion
+
+		#region Update methods. // Update calls for the main menu.
+
+		/// <summary>
+		/// Bind the debug key and escape key for the Main menu.
+		/// </summary>
+		protected override void BindKeys()
         {
             Controls.Bind(Commands.Debug, Keys.D, ActionType.Released);
             Controls.Bind(Commands.Quit, Keys.Escape, ActionType.Released);
